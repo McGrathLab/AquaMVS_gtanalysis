@@ -22,28 +22,29 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 
 ## Current Position
 
-Phase: 1 of 5 (Data & Environment)
-Plan: 2 of 2 in current phase (01-01 complete, 01-02 complete)
-Status: Phase 1 Complete
-Last activity: 2026-06-30 — 01-02 complete: analysis/loader.py + entrypoint.py, SMOKE TEST PASSED
+Phase: 2 of 5 (Corner Transfer)
+Plan: 1 of 3 in current phase (02-01 complete)
+Status: In Progress
+Last activity: 2026-06-30 — 02-01 complete: charuco_detect.py + detect_corners.py, XFER-01 PASSED (2611 corners, 75/96 pairs)
 
-Progress: [██░░░░░░░░] ~10%
+Progress: [███░░░░░░░] ~20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 5.5 min
-- Total execution time: 0.18 hours
+- Total plans completed: 3
+- Average duration: 7 min
+- Total execution time: 0.35 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-data-environment | 2/2 | 11 min | 5.5 min |
+| 02-corner-transfer | 1/3 | 10 min | 10 min |
 
 **Recent Trend:**
-- Last 5 plans: 8 min, 3 min
+- Last 5 plans: 8 min, 3 min, 10 min
 - Trend: baseline
 
 *Updated after each plan completion*
@@ -65,6 +66,12 @@ Recent decisions affecting current work:
 - [Phase 01]: e3v8250 confirmed as auxiliary fisheye witness view — no depth map, handled with None return
 - [Phase 01]: Fused clouds returned as lazy Path objects only (~590 MB each); never loaded by loader
 
+### Key Decisions (Phase 02)
+
+- [Phase 02-01]: Detect on UNDISTORTED images only so pixel (u,v) matches depth-map grid
+- [Phase 02-01]: No dist_coeffs passed to detect_charuco; CharucoDetector handles subpixel refinement internally on undistorted images
+- [Phase 02-01]: Results keyed by (frame.output_idx, camera) for direct consumption by Plan 02-02
+
 ### Pending Todos
 
 [From .planning/todos/pending/ — ideas captured during sessions]
@@ -81,5 +88,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-30
-Stopped at: Completed 01-02-PLAN.md: analysis/loader.py + entrypoint.py implemented; SMOKE TEST PASSED; DATA-02/03/04 marked complete
+Stopped at: Completed 02-01-PLAN.md: analysis/charuco_detect.py + detect_corners.py implemented; XFER-01 PASSED (2611 corners, 75/96 pairs)
 Resume file: None

@@ -16,7 +16,7 @@ Requirements for the headline-first validation. Each maps to roadmap phases.
 
 ### Corner Transfer
 
-- [ ] **XFER-01**: ChArUco corners are detected subpixel in each camera's image, reusing the AquaCal detector for the known board (12×9, 60 mm squares, DICT_5X5_100)
+- [x] **XFER-01**: ChArUco corners are detected subpixel in each camera's image, reusing the AquaCal detector for the known board (12×9, 60 mm squares, DICT_5X5_100)
 - [ ] **XFER-02**: Each detected corner pixel samples the camera's MVS depth map (bilinear) and back-projects through `RefractiveProjectionModel.cast_ray` to a 3D corner in the MVS frame
 - [ ] **XFER-03**: A plane-fit fallback evaluates corners with missing/weak depth on the board plane fit from dense points
 - [ ] **XFER-04**: Corner-depth dropout rate is measured and reported (determines reliance on direct depth vs plane-fit)
@@ -67,7 +67,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | DATA-02 | Phase 1 | Complete |
 | DATA-03 | Phase 1 | Complete |
 | DATA-04 | Phase 1 | Complete |
-| XFER-01 | Phase 2 | Pending |
+| XFER-01 | Phase 2 | Complete |
 | XFER-02 | Phase 2 | Pending |
 | XFER-03 | Phase 2 | Pending |
 | XFER-04 | Phase 2 | Pending |
