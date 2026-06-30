@@ -103,7 +103,7 @@ def _build_rows() -> list[list[str]]:
         # MET-04
         [
             "Absolute scale (MET-04)",
-            f"+{scale_err_pct:+.2f}% / {board_size_mm:.3f} mm",
+            f"{scale_err_pct:+.2f}% / {board_size_mm:.3f} mm",
             "% / mm",
             "consistency check (partly circular)",
         ],
