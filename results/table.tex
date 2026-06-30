@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+  \centering
+  \caption{AquaMVS accuracy metrics}
+  \label{tab:aquamvs-metrics}
+  \begin{tabular}{llll}
+    \toprule
+    Metric & Value & Units & Category \\
+    \midrule
+    Flatness (MET-01) & 1.09 & mm & scale-independent (non-circular) \\
+    Spatial/angular consistency (MET-02) & board-size CV 0.0016; tilt 2.8-40.7 & deg / dimensionless & scale-independent (non-circular) \\
+    Cross-camera agreement (MET-03) & 3.46 & mm & scale-independent (non-circular) \\
+    Rigid inlier RMSE (MET-05) & 1.05 & mm & scale-independent (non-circular) \\
+    Range-vs-lateral dominance (MET-06) & 4.41 (range 3.64 mm vs lateral 0.82 mm) & ratio & scale-independent (non-circular, refraction signature) \\
+    Absolute scale (MET-04) & ++0.04\% / 60.013 mm & \% / mm & consistency check (partly circular) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
