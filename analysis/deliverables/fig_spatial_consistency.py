@@ -52,7 +52,9 @@ def main() -> None:
     fig_height = 6.0
 
     with dissertation_style():
-        fig, axes = plt.subplots(2, 3, figsize=(fig_width, fig_height))
+        fig, axes = plt.subplots(
+            2, 3, figsize=(fig_width, fig_height), constrained_layout=True
+        )
 
         x_labels = [
             ("Depth below surface [m]", depth_pos),
@@ -94,14 +96,12 @@ def main() -> None:
             norm=plt.Normalize(vmin=tilt_deg.min(), vmax=tilt_deg.max())
         )
         sm.set_array([])
-        cbar = fig.colorbar(sm, ax=axes[:, 2], shrink=0.8, pad=0.04)
+        cbar = fig.colorbar(sm, ax=axes[:, 2], shrink=0.8, pad=0.02)
         cbar.set_label("Tilt angle [deg]")
 
         fig.suptitle(
             "Spatial Consistency: Flatness and Board Size vs Working-Volume Position",
-            y=1.01
         )
-        fig.tight_layout()
 
         paths = save_figure(
             fig, "spatial_consistency",
