@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: in_progress
-last_updated: "2026-06-30T18:10:00.000Z"
+status: unknown
+last_updated: "2026-06-30T17:56:49.922Z"
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 ## Current Position
 
 Phase: 5 of 5 (Manuscript Deliverables)
-Plan: 2 of 3 in current phase (05-02 complete)
-Status: Phase 5 in progress — 05-02 complete (OUT-02 spatial-consistency figure + MET-06 range-vs-lateral figure, svg+pdf+png)
+Plan: 3 of 3 in current phase (05-03 complete — PHASE COMPLETE)
+Status: ALL PHASES COMPLETE — Phase 5 plan 03 complete (OUT-04 methods.md + OUT-05 run_all.py)
 MET-06 addition (user-requested, 2026-06-30): error-direction decomposition. analysis/error_decomposition.py + compute_error_decomposition.py → data/analysis_output/error_decomposition.json. RANGE-vs-LATERAL (camera/refraction frame, cross-camera offset projected onto in-water cast_ray): pooled range_dominance=4.41 (range 3.64mm vs lateral 0.82mm; range-dominated every frame 3.16-4.89x = REFRACTIVE SIGNATURE). Board-frame (MET-05 rigid residuals): out-of-plane 0.79mm vs in-plane 0.70mm. 25 tests pass. Phase 5 must add: a results-table row, a range-vs-lateral figure, and a methods sentence ("residual error is range-dominated, consistent with refraction").
 Last activity: 2026-06-30 — Phase 4 scale/alignment consistency check shipped. Closed-form Umeyama (analysis/alignment.py) aligns per-frame consensus MVS corners to the ideal 60mm board with known corner_id correspondence (no ICP). MET-05 pooled rigid inlier RMSE=1.055mm (per-frame 0.66-1.61mm, 667 inliers/8 frames; outlier rule max(5mm, median+3*MAD)). MET-04 scale factor mean=1.00040 (+0.040%, range -0.153..+0.390%), board size mean=60.013mm — labeled a PARTLY CIRCULAR consistency check (60mm is the calibration anchor) framed against Maas (2015) factor-of-two. Ordering invariant PROVEN: Phase 3 JSON hashes byte-identical before/after (tests/check_ordering_invariant.py); scale_alignment.json on separate data/analysis_output path; compute refuses (exit 1) if Phase 3 absent. No "0.5 %" misread anywhere. entrypoint.py untouched (OUT-05 deferred to Phase 5). All 5 tests/checkers exit 0.
 
@@ -52,6 +52,7 @@ Progress: [█████████░] ~90%
 - Trend: baseline
 
 *Updated after each plan completion*
+| Phase 05-manuscript-deliverables P03 | 12 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase 03-01]: board_size_from_corners uses median adjacent-pair 3D spacing (not fitted extent) as MET-02 consistency measure; docstring flags this as variation, not absolute accuracy (MET-04 is Phase 4)
 - [Phase 03-01]: depth_m defined as centroid projection onto calib.interface_normal for cross-frame comparability; seed plane for slab crop from corner fit_board_plane (no PnP re-detection)
 - [Phase 03-01]: data/ gitignored by design; flatness_consistency.json exists on disk but not committed; only code is versioned
+- [Phase 05-03]: Manuscript prose is artifact-driven: all cited metric numbers read from JSON at runtime so text can never drift from computed values
+- [Phase 05-03]: Maas (2015) benchmark framed as factor-of-two — '0.5 %' never appears; banned-string guard raises ValueError before write if violated
+- [Phase 05-03]: run_all.py uses subprocess for compute stages and direct import for deliverable generators; --skip-metrics flag for fast iteration
 
 ### Key Decisions (Phase 02)
 
@@ -121,5 +125,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-30
-Stopped at: Completed 05-02-PLAN.md: OUT-02 spatial-consistency figure (fig_spatial_consistency.py, 2x3 scatter, tilt colormap, svg+pdf+png); MET-06 range-vs-lateral figure (fig_range_lateral.py, grouped bars + board-frame panel, dominance annotation, svg+pdf+png); 6 figure files in data/analysis_output/figures/
+Stopped at: Completed 05-03-PLAN.md (FINAL): OUT-04 results/methods.md (88-line manuscript prose, artifact-driven numbers, Maas factor-of-two framing, 3 citations) + OUT-05 analysis/run_all.py (5-stage subprocess pipeline + 5 deliverable generators, file-by-file summary, --skip-metrics flag). ALL PLANS COMPLETE. Full pipeline verified end-to-end.
 Resume file: None

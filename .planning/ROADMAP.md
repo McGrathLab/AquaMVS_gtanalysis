@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Corner Transfer** - Move image-detected ChArUco corners into the MVS frame through refractive depth maps (completed 2026-06-30)
 - [x] **Phase 3: Scale-Independent Metrics** - Compute flatness, spatial consistency, and cross-camera agreement before any scaling (completed 2026-06-30)
 - [x] **Phase 4: Scale Check & Alignment** - Report absolute scale and rigid alignment as honest consistency checks (completed 2026-06-30)
-- [ ] **Phase 5: Manuscript Deliverables** - Assemble the table, figure, per-camera output, and methods paragraph from one entrypoint
+- [x] **Phase 5: Manuscript Deliverables** - Assemble the table, figure, per-camera output, and methods paragraph from one entrypoint (completed 2026-06-30)
 
 ## Phase Details
 
@@ -107,4 +107,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Corner Transfer | 2/2 | Complete   | 2026-06-30 |
 | 3. Scale-Independent Metrics | 2/2 | Complete   | 2026-06-30 |
 | 4. Scale Check & Alignment | 1/1 | Complete   | 2026-06-30 |
-| 5. Manuscript Deliverables | 2/3 | In Progress|  |
+| 5. Manuscript Deliverables | 3/3 | Complete   | 2026-06-30 |
