@@ -29,11 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A documented entrypoint runs in the `AquaMVS` conda env with `aquamvs` v1.5.2 importable.
   3. The loader returns calibration (camera params, refractive interface, board spec), per-camera/per-frame depth maps, and fused clouds from the extracted data.
   4. The validation set resolves to the 8 held-out frames with output indices 0 and 5 (raw frames 0 and 3930) excluded.
-**Plans**: TBD (~2 plans)
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Extract dataset to `./data/`, verify completeness, gitignore, delete source zip after verification
-- [ ] 01-02: Build the loader + entrypoint (calibration, depth maps, clouds, held-out frame selection)
+- [ ] 01-01-PLAN.md — Extract dataset to `./data/`, manifest-verify completeness, gitignore, delete source zip after verification
+- [ ] 01-02-PLAN.md — Build GroundTruthDataset loader + single documented entrypoint (calibration, depth maps, clouds, held-out frame selection, e3v8250 handling)
 
 ### Phase 2: Corner Transfer
 **Goal**: Image-detected ChArUco corners are placed as 3D points in the MVS frame via refractive back-projection through the depth maps, with a measured dropout rate.
