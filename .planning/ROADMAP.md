@@ -12,7 +12,7 @@ This project assembles existing `aquamvs` v1.5.2 hooks (plus a thin corner-trans
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Data & Environment** - Extract the dataset and stand up a reproducible loader in the AquaMVS env
+- [x] **Phase 1: Data & Environment** - Extract the dataset and stand up a reproducible loader in the AquaMVS env (completed 2026-06-30)
 - [ ] **Phase 2: Corner Transfer** - Move image-detected ChArUco corners into the MVS frame through refractive depth maps
 - [ ] **Phase 3: Scale-Independent Metrics** - Compute flatness, spatial consistency, and cross-camera agreement before any scaling
 - [ ] **Phase 4: Scale Check & Alignment** - Report absolute scale and rigid alignment as honest consistency checks
@@ -102,7 +102,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Data & Environment | 1/2 | In Progress|  |
+| 1. Data & Environment | 2/2 | Complete   | 2026-06-30 |
 | 2. Corner Transfer | 0/2 | Not started | - |
 | 3. Scale-Independent Metrics | 0/2 | Not started | - |
 | 4. Scale Check & Alignment | 0/1 | Not started | - |
