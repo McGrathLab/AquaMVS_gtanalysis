@@ -97,9 +97,12 @@ def main() -> None:
         ax_top = fig.add_subplot(gs[0, 0], sharex=ax)
         ax_right = fig.add_subplot(gs[1, 1], sharey=ax)
 
-        # central scatter (core only) + 2-sigma covariance ellipse (full data)
+        # central scatter (core only) + 2-sigma covariance ellipse (full data).
+        # Colour convention shared with the range-vs-lateral figure: range = blue,
+        # lateral = gold (used on the marginals below). The scatter cloud is a
+        # neutral third colour so the directional marginals carry the encoding.
         core = (np.abs(lat) <= lim) & (np.abs(rng) <= lim)
-        ax.scatter(lat[core], rng[core], s=7, alpha=0.30, color=COLORS["blue"],
+        ax.scatter(lat[core], rng[core], s=7, alpha=0.30, color=COLORS["teal"],
                    edgecolors="none", zorder=3, rasterized=True)
         ratio = _cov_ellipse(lat, rng, ax, n_std=2.0, facecolor="none",
                              edgecolor=COLORS["coral"], lw=1.8, zorder=5)
@@ -110,30 +113,21 @@ def main() -> None:
         ax.set_xlabel("Lateral offset [mm]  (perpendicular to viewing ray)")
         ax.set_ylabel("Range offset [mm]  (along viewing ray)")
 
-        # marginals over the FULL distribution (tail visible here)
+        # marginals over the FULL distribution (tail visible here).
+        # lateral marginal (top) = gold; range marginal (right) = blue.
         bins = np.linspace(-lim, lim, 50)
-        ax_top.hist(np.clip(lat, -lim, lim), bins=bins, color=COLORS["teal"])
+        ax_top.hist(np.clip(lat, -lim, lim), bins=bins, color=COLORS["gold"])
         ax_right.hist(np.clip(rng, -lim, lim), bins=bins, orientation="horizontal",
                       color=COLORS["blue"])
         for a in (ax_top, ax_right):
             a.axis("off")
 
-        # annotation — numbers from the artifact, not the ellipse aspect
-        ax.annotate(
-            f"Range-dominated {dominance:.2f}$\\times$\n"
-            f"range {range_rms:.2f} mm vs\nlateral {lateral_rms:.2f} mm (RMS)\n"
-            f"errors smear along the\nline of sight",
-            xy=(0.12 * lim, 0.7 * lim), xytext=(-0.95 * lim, 0.55 * lim),
-            fontsize=8, color=COLORS["coral"], ha="left", va="center",
-            arrowprops=dict(arrowstyle="->", color=COLORS["coral"], lw=1.0),
-        )
         if n_crop:
             ax.text(0.97, 0.02, f"+{n_crop} obs beyond axis (range tail)",
                     transform=ax.transAxes, ha="right", va="bottom",
                     fontsize=6.5, color=COLORS["dark gray"])
 
-        fig.suptitle("Residual Anisotropy: Error Aligns with the Viewing Ray "
-                     "(Refraction Signature)")
+        ax_top.set_title("Cross-Camera Corner Offsets in the Viewing-Ray Frame", pad=8)
         paths = save_figure(fig, "error_anisotropy",
                             output_dir=FIGURES_DIR, formats=("svg", "pdf", "png"))
         for p in paths:
