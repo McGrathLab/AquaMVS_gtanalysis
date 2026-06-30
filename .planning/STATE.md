@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 status: in_progress
-last_updated: "2026-06-30T17:52:00.000Z"
+last_updated: "2026-06-30T18:10:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 10
-  completed_plans: 8
+  completed_plans: 9
 ---
 
 # Project State
@@ -23,12 +23,12 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 ## Current Position
 
 Phase: 5 of 5 (Manuscript Deliverables)
-Plan: 1 of 3 in current phase (05-01 complete)
-Status: Phase 5 in progress — 05-01 complete (deliverables subpackage + OUT-01 table + OUT-03 per-camera)
+Plan: 2 of 3 in current phase (05-02 complete)
+Status: Phase 5 in progress — 05-02 complete (OUT-02 spatial-consistency figure + MET-06 range-vs-lateral figure, svg+pdf+png)
 MET-06 addition (user-requested, 2026-06-30): error-direction decomposition. analysis/error_decomposition.py + compute_error_decomposition.py → data/analysis_output/error_decomposition.json. RANGE-vs-LATERAL (camera/refraction frame, cross-camera offset projected onto in-water cast_ray): pooled range_dominance=4.41 (range 3.64mm vs lateral 0.82mm; range-dominated every frame 3.16-4.89x = REFRACTIVE SIGNATURE). Board-frame (MET-05 rigid residuals): out-of-plane 0.79mm vs in-plane 0.70mm. 25 tests pass. Phase 5 must add: a results-table row, a range-vs-lateral figure, and a methods sentence ("residual error is range-dominated, consistent with refraction").
 Last activity: 2026-06-30 — Phase 4 scale/alignment consistency check shipped. Closed-form Umeyama (analysis/alignment.py) aligns per-frame consensus MVS corners to the ideal 60mm board with known corner_id correspondence (no ICP). MET-05 pooled rigid inlier RMSE=1.055mm (per-frame 0.66-1.61mm, 667 inliers/8 frames; outlier rule max(5mm, median+3*MAD)). MET-04 scale factor mean=1.00040 (+0.040%, range -0.153..+0.390%), board size mean=60.013mm — labeled a PARTLY CIRCULAR consistency check (60mm is the calibration anchor) framed against Maas (2015) factor-of-two. Ordering invariant PROVEN: Phase 3 JSON hashes byte-identical before/after (tests/check_ordering_invariant.py); scale_alignment.json on separate data/analysis_output path; compute refuses (exit 1) if Phase 3 absent. No "0.5 %" misread anywhere. entrypoint.py untouched (OUT-05 deferred to Phase 5). All 5 tests/checkers exit 0.
 
-Progress: [████████░░] ~85%
+Progress: [█████████░] ~90%
 
 ## Performance Metrics
 
@@ -45,7 +45,7 @@ Progress: [████████░░] ~85%
 | 02-corner-transfer | 3/3 | 55 min | 18 min |
 | 03-scale-independent-metrics | 2/2 | 14 min | 7 min |
 | 04-scale-check-alignment | 1/1 | 6 min | 6 min |
-| 05-manuscript-deliverables | 1/3 | 18 min | 18 min |
+| 05-manuscript-deliverables | 2/3 | 28 min | 14 min |
 
 **Recent Trend:**
 - Last 5 plans: 3 min, 10 min, 8 min, 6 min, 6 min
@@ -92,6 +92,11 @@ Recent decisions affecting current work:
 - [Phase 05-01]: Artifact paths anchored to repo root via Path(__file__).resolve() chain so generators run correctly from any cwd under conda run
 - [Phase 05-01]: Banned strings (58.5, 173.7, 0.5 %) guarded programmatically at write time in both make_table.py and make_per_camera.py
 - [Phase 05-01]: Per-camera exclusions framed as non-events (expected rig characteristic, not failure); "non-event" appears in per_camera_agreement.md intro prose
+- [Phase 05-02]: Figure data read exclusively from load_flatness() / load_error_decomp() at runtime — no literals for metric values
+- [Phase 05-02]: depth_m displayed as abs(depth_m) (positive depth below surface) for scatter axes readability
+- [Phase 05-02]: Tilt colour-encoded in fig_spatial_consistency via LinearSegmentedColormap (blue-teal-gold) with shared colorbar
+- [Phase 05-02]: Dominance ratio annotation uses f'{dominance:.2f}' from pooled.range_lateral.range_dominance; verified present in SVG vector text
+- [Phase 05-02]: Board-frame out-of-plane vs in-plane panel included in fig_range_lateral as conceptual contrast (optional per plan)
 
 ### Key Decisions (Phase 02-02)
 
@@ -116,5 +121,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-30
-Stopped at: Completed 05-01-PLAN.md: deliverables subpackage (_style.py, _artifacts.py, make_table.py, make_per_camera.py); OUT-01 results/table.{md,tex,csv} (6 metrics, SI vs circularity labels); OUT-03 results/per_camera_agreement.{md,csv} (non-event framing); DissertationFigures editable install in AquaMVS env
+Stopped at: Completed 05-02-PLAN.md: OUT-02 spatial-consistency figure (fig_spatial_consistency.py, 2x3 scatter, tilt colormap, svg+pdf+png); MET-06 range-vs-lateral figure (fig_range_lateral.py, grouped bars + board-frame panel, dominance annotation, svg+pdf+png); 6 figure files in data/analysis_output/figures/
 Resume file: None

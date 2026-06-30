@@ -33,7 +33,7 @@ Requirements for the headline-first validation. Each maps to roadmap phases.
 ### Deliverables
 
 - [x] **OUT-01**: Results table — per metric: value and whether it is scale-independent (non-circular) or a consistency check
-- [ ] **OUT-02**: Spatial-consistency figure — flatness + size vs working-volume position — styled to match DissertationFigures conventions
+- [x] **OUT-02**: Spatial-consistency figure — flatness + size vs working-volume position — styled to match DissertationFigures conventions
 - [x] **OUT-03**: Per-camera board-localization agreement output
 - [ ] **OUT-04**: Drafted methods paragraph — known-geometry target, measured 2-of-10 overlap + exclusion of the 8 held-out frames, corner transfer through refractive depth maps, scale-independent metrics led, scale as consistency check; cites de Jesus (method), Menna & Nocerino (domain), Maas (benchmark)
 - [ ] **OUT-05**: Analysis is reproducible — one entrypoint regenerates all artifacts from the extracted data
@@ -79,7 +79,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | MET-05 | Phase 4 | Complete |
 | MET-06 | Phase 4 | Complete |
 | OUT-01 | Phase 5 | Complete |
-| OUT-02 | Phase 5 | Pending |
+| OUT-02 | Phase 5 | Complete |
 | OUT-03 | Phase 5 | Complete |
 | OUT-04 | Phase 5 | Pending |
 | OUT-05 | Phase 5 | Pending |
