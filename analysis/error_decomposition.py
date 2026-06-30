@@ -35,6 +35,53 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+# ── Local-frame components (for the anisotropy figure) ──────────────────────────
+
+def local_frame_components(
+    residuals: np.ndarray,
+    ray_dirs: np.ndarray,
+) -> Dict[str, np.ndarray]:
+    """
+    Express each residual in its own (range, lat_u, lat_v) orthonormal frame.
+
+    For each observation the range axis is the unit viewing ray; the two lateral
+    axes (lat_u, lat_v) are an arbitrary orthonormal basis of the perpendicular
+    plane. Returns SIGNED components in mm. Used to build the pooled
+    range-vs-lateral scatter / covariance ellipse: stacking (lat_u, range) and
+    (lat_v, range) gives a lateral-symmetric cloud whose elongation along range
+    is the refraction signature.
+
+    Returns
+    -------
+    dict with range_mm (N,), lat_u_mm (N,), lat_v_mm (N,) — all signed, mm.
+    """
+    residuals = np.asarray(residuals, dtype=np.float64).reshape(-1, 3)
+    ray_dirs = np.asarray(ray_dirs, dtype=np.float64).reshape(-1, 3)
+    n = len(residuals)
+    if n == 0:
+        return {"range_mm": np.zeros(0), "lat_u_mm": np.zeros(0), "lat_v_mm": np.zeros(0)}
+
+    norms = np.linalg.norm(ray_dirs, axis=1, keepdims=True)
+    norms = np.where(norms > 1e-12, norms, 1.0)
+    w = ray_dirs / norms                                   # (N,3) unit range axis
+
+    # Build a perpendicular basis per row: u = normalize(ref x w), v = w x u.
+    # Choose ref = world-up unless near-parallel to w, then ref = world-x.
+    up = np.tile(np.array([0.0, 0.0, 1.0]), (n, 1))
+    alt = np.tile(np.array([1.0, 0.0, 0.0]), (n, 1))
+    near_parallel = np.abs(np.sum(w * up, axis=1)) > 0.95
+    ref = np.where(near_parallel[:, None], alt, up)
+
+    u = np.cross(ref, w)
+    u /= np.maximum(np.linalg.norm(u, axis=1, keepdims=True), 1e-12)
+    v = np.cross(w, u)                                      # already unit
+
+    range_mm = np.sum(residuals * w, axis=1) * 1000.0
+    lat_u_mm = np.sum(residuals * u, axis=1) * 1000.0
+    lat_v_mm = np.sum(residuals * v, axis=1) * 1000.0
+    return {"range_mm": range_mm, "lat_u_mm": lat_u_mm, "lat_v_mm": lat_v_mm}
+
+
 # ── Geometry helpers ────────────────────────────────────────────────────────────
 
 def board_frame_residuals(

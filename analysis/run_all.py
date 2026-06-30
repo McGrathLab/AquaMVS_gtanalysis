@@ -144,6 +144,9 @@ def run_deliverables() -> None:
     from analysis.deliverables.make_methods import main as make_methods
     from analysis.deliverables.fig_spatial_consistency import main as fig_spatial
     from analysis.deliverables.fig_range_lateral import main as fig_range
+    from analysis.deliverables.fig_anisotropy import main as fig_anisotropy
+    from analysis.deliverables.fig_boards_volume import main as fig_boards_volume
+    from analysis.deliverables.fig_board_heatmap import main as fig_board_heatmap
 
     print(f"\n{'=' * 64}")
     print("DELIVERABLES: table, per-camera, methods, figures")
@@ -163,6 +166,15 @@ def run_deliverables() -> None:
 
     print("\n--- fig_range_lateral ---")
     fig_range()
+
+    print("\n--- fig_anisotropy ---")
+    fig_anisotropy()
+
+    print("\n--- fig_boards_volume ---")
+    fig_boards_volume()
+
+    print("\n--- fig_board_heatmap ---")
+    fig_board_heatmap()
 
 
 # ---------------------------------------------------------------------------
@@ -247,7 +259,7 @@ def print_summary() -> None:
         print(f"  flatness RMS        {flatness:.2f} mm    (MET-01, scale-independent)")
         print(f"  cross-camera RMS    {cross_cam:.2f} mm    (MET-03, scale-independent)")
         print(f"  rigid inlier RMSE   {rigid:.2f} mm    (MET-05, scale alignment)")
-        print(f"  scale error         {scale_pct:+.3f}%    (MET-04, consistency check, partly circular)")
+        print(f"  scale error         {scale_pct:+.3f}%    (MET-04, bounds dense-stage scale bias; weakly circular)")
         print(f"  range dominance     {dominance:.2f}x       (MET-06, range {range_rms:.2f} mm vs lateral {lateral_rms:.2f} mm)")
         print("  Maas (2015) benchmark: factor of two refractive precision penalty")
     except Exception as exc:

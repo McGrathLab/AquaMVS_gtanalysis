@@ -67,6 +67,51 @@ def _rms(vals: list[float]) -> float:
     return float(np.sqrt(np.mean(a ** 2))) if len(a) else float("nan")
 
 
+def frame_cross_camera_samples(frame_idx, camera_id, corner_id, points, pixels, models, frame):
+    """
+    Per-observation cross-camera residual vectors + viewing rays for one frame.
+
+    Mirrors the range-vs-lateral collection in main(): for each corner co-observed
+    by >=2 cameras, residual = per-camera point minus the cross-camera consensus;
+    ray = the in-water cast_ray direction at that corner's pixel for that camera.
+
+    Returns (residuals (N,3) world metres, ray_dirs (N,3) unit-ish) — possibly empty.
+    """
+    fmask = frame_idx == frame
+    f_cid = corner_id[fmask]
+    f_cam = np.array([str(c) for c in camera_id[fmask]])
+    f_pts = np.asarray(points, dtype=np.float64)[fmask]
+    f_pix = np.asarray(pixels, dtype=np.float64)[fmask]
+
+    by_corner: dict[int, list[int]] = {}
+    for i, c in enumerate(f_cid):
+        by_corner.setdefault(int(c), []).append(i)
+
+    res_list, cam_of_res, pix_of_res = [], [], []
+    for cid, rows in by_corner.items():
+        if len(rows) < 2:
+            continue
+        cons = f_pts[rows].mean(axis=0)
+        for r in rows:
+            res_list.append(f_pts[r] - cons)
+            cam_of_res.append(f_cam[r])
+            pix_of_res.append(f_pix[r])
+
+    if not res_list:
+        return np.zeros((0, 3)), np.zeros((0, 3))
+
+    res_arr = np.array(res_list, dtype=np.float64)
+    pix_arr = np.array(pix_of_res, dtype=np.float64)
+    cam_arr = np.array(cam_of_res)
+    ray_dirs = np.zeros_like(res_arr)
+    for cam in set(cam_arr):
+        sel = np.where(cam_arr == cam)[0]
+        with torch.no_grad():
+            _, dirs = models[cam].cast_ray(torch.tensor(pix_arr[sel], dtype=torch.float32))
+        ray_dirs[sel] = dirs.detach().cpu().numpy().astype(np.float64)
+    return res_arr, ray_dirs
+
+
 def main(corners_path: str, data_root: str, out: str) -> None:
     t0 = time.time()
 

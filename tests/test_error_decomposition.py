@@ -25,6 +25,7 @@ from analysis.error_decomposition import (
     board_frame_residuals,
     decompose_board_frame,
     decompose_range_lateral,
+    local_frame_components,
 )
 
 
@@ -83,6 +84,21 @@ def test_board_frame_residuals_reconstruction() -> None:
     assert np.allclose(normal, [0.0, 0.0, 1.0])  # R[:,2] for identity
 
 
+def test_local_frame_components() -> None:
+    ray = np.array([[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]])
+    # row 0: pure along ray (range); row 1: pure perpendicular (lateral)
+    res = np.array([[0.0, 0.0, 0.004], [0.003, 0.0, 0.0]])
+    c = local_frame_components(res, ray)
+    # range component: row 0 = 4 mm, row 1 = 0
+    assert abs(abs(c["range_mm"][0]) - 4.0) < 1e-6
+    assert abs(c["range_mm"][1]) < 1e-6
+    # lateral magnitude (u,v combined): row 0 ~ 0, row 1 = 3 mm
+    lat0 = np.hypot(c["lat_u_mm"][0], c["lat_v_mm"][0])
+    lat1 = np.hypot(c["lat_u_mm"][1], c["lat_v_mm"][1])
+    assert lat0 < 1e-6
+    assert abs(lat1 - 3.0) < 1e-6
+
+
 if __name__ == "__main__":
     test_board_pure_normal();                  print("  [OK] board: pure normal -> out-of-plane only")
     test_board_pure_in_plane();                print("  [OK] board: pure in-plane -> in-plane only")
@@ -90,4 +106,5 @@ if __name__ == "__main__":
     test_range_pure_perpendicular();           print("  [OK] range: pure perpendicular -> lateral only")
     test_range_45_degree_mix();                print("  [OK] range: 45deg mix -> range==lateral, dom==1")
     test_board_frame_residuals_reconstruction(); print("  [OK] board_frame_residuals reconstructs res + normal")
+    test_local_frame_components();             print("  [OK] local_frame_components: range/lateral split")
     print("test_error_decomposition OK")
