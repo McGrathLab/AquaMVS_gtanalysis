@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-30T15:54:50.577Z"
+last_updated: "2026-06-30T16:17:00.676Z"
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 6
+  completed_plans: 5
 ---
 
 # Project State
@@ -48,6 +48,7 @@ Progress: [████░░░░░░] ~30%
 - Trend: baseline
 
 *Updated after each plan completion*
+| Phase 03-scale-independent-metrics P02 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Board JSON key is 'dictionary' (not 'dict_name'); mapped to BoardSpec.dict_name in loader
 - [Phase 01]: e3v8250 confirmed as auxiliary fisheye witness view — no depth map, handled with None return
 - [Phase 01]: Fused clouds returned as lazy Path objects only (~590 MB each); never loaded by loader
+- [Phase 03-02]: Coverage threshold default=6 corners/frame; below-threshold cameras recorded as excluded (not errors); board-blind cameras (0 rows) absent from coverage — non-event
+- [Phase 03-02]: Overall MET-03 RMS uses pooled per-corner residuals across all frames (not mean-of-frame-means) to preserve distribution shape for Phase 5
 
 ### Key Decisions (Phase 02)
 

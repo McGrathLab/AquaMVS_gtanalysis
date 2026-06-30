@@ -25,7 +25,7 @@ Requirements for the headline-first validation. Each maps to roadmap phases.
 
 - [ ] **MET-01**: Flatness (§4.1) — plane-fit RMS of the board's dense points, per frame, computed before any scaling step
 - [ ] **MET-02**: Spatial/angular consistency (§4.2) — board size and flatness measured per frame and reported as variation across position, depth, and tilt over the working volume
-- [ ] **MET-03**: Cross-camera agreement (§4.3) — quantify whether each camera's depth places the board and transferred corners at a consistent 3D location
+- [x] **MET-03**: Cross-camera agreement (§4.3) — quantify whether each camera's depth places the board and transferred corners at a consistent 3D location
 - [ ] **MET-04**: Absolute scale (§4.5) — reconstructed square size vs known 60 mm, reported as a consistency check with circularity stated and the Maas (2015) factor-of-two context
 - [ ] **MET-05**: Rigid alignment (ICP/Umeyama) of MVS corners to the ideal planar board with inlier RMSE per position; scale-independent metrics reported before any scaling so they cannot absorb scale error
 
@@ -73,7 +73,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | XFER-04 | Phase 2 | Complete |
 | MET-01 | Phase 3 | Pending |
 | MET-02 | Phase 3 | Pending |
-| MET-03 | Phase 3 | Pending |
+| MET-03 | Phase 3 | Complete |
 | MET-04 | Phase 4 | Pending |
 | MET-05 | Phase 4 | Pending |
 | OUT-01 | Phase 5 | Pending |
