@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Data & Environment** - Extract the dataset and stand up a reproducible loader in the AquaMVS env (completed 2026-06-30)
 - [x] **Phase 2: Corner Transfer** - Move image-detected ChArUco corners into the MVS frame through refractive depth maps (completed 2026-06-30)
 - [x] **Phase 3: Scale-Independent Metrics** - Compute flatness, spatial consistency, and cross-camera agreement before any scaling (completed 2026-06-30)
-- [ ] **Phase 4: Scale Check & Alignment** - Report absolute scale and rigid alignment as honest consistency checks
+- [x] **Phase 4: Scale Check & Alignment** - Report absolute scale and rigid alignment as honest consistency checks (completed 2026-06-30)
 - [ ] **Phase 5: Manuscript Deliverables** - Assemble the table, figure, per-camera output, and methods paragraph from one entrypoint
 
 ## Phase Details
@@ -77,7 +77,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Closed-form Umeyama rigid alignment (no-scale inlier RMSE, MET-05) + absolute-scale consistency check (scale factor + board size, MET-04) with circularity caveat and Maas (2015) factor-of-two framing; separate scale_alignment.json artifact preserving the Phase 3 ordering invariant
+- [x] 04-01-PLAN.md — Closed-form Umeyama rigid alignment (no-scale inlier RMSE, MET-05) + absolute-scale consistency check (scale factor + board size, MET-04) with circularity caveat and Maas (2015) factor-of-two framing; separate scale_alignment.json artifact preserving the Phase 3 ordering invariant
 
 ### Phase 5: Manuscript Deliverables
 **Goal**: All metrics assembled into manuscript-ready artifacts — results table, spatial-consistency figure, per-camera output, and methods paragraph — regenerable from one reproducible entrypoint.

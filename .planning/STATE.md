@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 status: unknown
-last_updated: "2026-06-30T16:24:14.860Z"
+last_updated: "2026-06-30T17:04:52.046Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_phases: 5
+  completed_phases: 4
+  total_plans: 7
+  completed_plans: 7
 ---
 
 # Project State
@@ -22,19 +22,19 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 
 ## Current Position
 
-Phase: 3 of 5 (Scale-Independent Metrics)
-Plan: 2 of 2 in current phase (03-01 and 03-02 complete)
-Status: Phase 3 Complete (+ post-hoc fix) — ready for Phase 4
-Last activity: 2026-06-30 — Phase 3 metrics corrected. Root-caused the frame-2 cross-camera outlier to 4 non-physical (Z<0, behind-interface) plane-fit-fallback corners from a degenerate seed plane (camera e3v83e9). Hardened Phase 2 transfer (intersect_ray_plane rejects t<=0; world-Z physical band) + added defensive Z>0 gates in the metric loaders. Re-ran transfer + both metrics. CORRECTED HEADLINE: MET-01 flatness pooled=1.093mm; MET-02 size mean=60.01mm CV=0.0015 (tilt 2.8-55.5°); MET-03 cross-camera pooled=3.46mm (was 58.5), per-frame 1.67-6.39mm, frame-2 173.7->2.0mm. plane_fit 10->6, 4 now unrecovered. 14 tests pass. corners.npz regenerated clean (2605).
+Phase: 4 of 5 (Scale Check & Alignment)
+Plan: 1 of 1 in current phase (04-01 complete)
+Status: Phase 4 Complete — ready for Phase 5 (Manuscript Deliverables)
+Last activity: 2026-06-30 — Phase 4 scale/alignment consistency check shipped. Closed-form Umeyama (analysis/alignment.py) aligns per-frame consensus MVS corners to the ideal 60mm board with known corner_id correspondence (no ICP). MET-05 pooled rigid inlier RMSE=1.055mm (per-frame 0.66-1.61mm, 667 inliers/8 frames; outlier rule max(5mm, median+3*MAD)). MET-04 scale factor mean=1.00040 (+0.040%, range -0.153..+0.390%), board size mean=60.013mm — labeled a PARTLY CIRCULAR consistency check (60mm is the calibration anchor) framed against Maas (2015) factor-of-two. Ordering invariant PROVEN: Phase 3 JSON hashes byte-identical before/after (tests/check_ordering_invariant.py); scale_alignment.json on separate data/analysis_output path; compute refuses (exit 1) if Phase 3 absent. No "0.5 %" misread anywhere. entrypoint.py untouched (OUT-05 deferred to Phase 5). All 5 tests/checkers exit 0.
 
-Progress: [██████░░░░] ~60%
+Progress: [████████░░] ~80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 7
 - Average duration: 7 min
-- Total execution time: 0.35 hours
+- Total execution time: 0.45 hours
 
 **By Phase:**
 
@@ -43,9 +43,10 @@ Progress: [██████░░░░] ~60%
 | 01-data-environment | 2/2 | 11 min | 5.5 min |
 | 02-corner-transfer | 3/3 | 55 min | 18 min |
 | 03-scale-independent-metrics | 2/2 | 14 min | 7 min |
+| 04-scale-check-alignment | 1/1 | 6 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 8 min, 3 min, 10 min, 8 min, 6 min
+- Last 5 plans: 3 min, 10 min, 8 min, 6 min, 6 min
 - Trend: baseline
 
 *Updated after each plan completion*
@@ -78,6 +79,14 @@ Recent decisions affecting current work:
 - [Phase 02-01]: No dist_coeffs passed to detect_charuco; CharucoDetector handles subpixel refinement internally on undistorted images
 - [Phase 02-01]: Results keyed by (frame.output_idx, camera) for direct consumption by Plan 02-02
 
+### Key Decisions (Phase 04-01)
+
+- [Phase 04-01]: Closed-form Umeyama/Kabsch used directly (no icp_align) — corner_id correspondence is known one-to-one, so the similarity fit is exact and avoids ICP correspondence ambiguity
+- [Phase 04-01]: MET-05 outlier rule = keep residual <= max(5.0mm abs floor, median+3*MAD), then rigid refit on inliers; documented in artifact outlier_rule block. Pooled rigid RMSE accumulated from inlier squared residuals across frames (not mean-of-frame-means)
+- [Phase 04-01]: MET-04 reported via two estimators on the SAME inlier set — Umeyama-with-scale factor (+%) and median inter-corner spacing (board_size_mm)
+- [Phase 04-01]: Ordering invariant enforced at runtime AND proven by test — compute refuses (exit 1) if Phase 3 artifacts absent/not computed_before_alignment; scale_alignment.json on separate data/analysis_output path; Phase 3 JSON hashes byte-identical before/after; "0.5 %" misread banned and absent
+- [Phase 04-01]: OUT-05 one-command regeneration (--run-metrics/run_pipeline) deferred to Phase 5; analysis/entrypoint.py untouched in Phase 4
+
 ### Key Decisions (Phase 02-02)
 
 - [Phase 02-02]: K_new (post-undistortion) used for projection models, NOT cam.K — corners and depth maps share the undistorted pixel grid
@@ -101,5 +110,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-30
-Stopped at: Completed 03-01-PLAN.md: flatness.py + compute_flatness_consistency.py; MET-01 pooled RMS=1.09mm, MET-02 size CV=0.0015; flatness_consistency.json persisted; Phase 3 complete
+Stopped at: Completed 04-01-PLAN.md: alignment.py + compute_scale_alignment.py; MET-05 pooled rigid RMSE=1.055mm, MET-04 scale mean=1.00040 (+0.040%) size mean=60.013mm; scale_alignment.json persisted on separate path; ordering invariant proven (Phase 3 hashes byte-identical); Phase 4 complete
 Resume file: None
