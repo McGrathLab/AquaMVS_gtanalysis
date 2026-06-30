@@ -63,30 +63,30 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| DATA-04 | TBD | Pending |
-| XFER-01 | TBD | Pending |
-| XFER-02 | TBD | Pending |
-| XFER-03 | TBD | Pending |
-| XFER-04 | TBD | Pending |
-| MET-01 | TBD | Pending |
-| MET-02 | TBD | Pending |
-| MET-03 | TBD | Pending |
-| MET-04 | TBD | Pending |
-| MET-05 | TBD | Pending |
-| OUT-01 | TBD | Pending |
-| OUT-02 | TBD | Pending |
-| OUT-03 | TBD | Pending |
-| OUT-04 | TBD | Pending |
-| OUT-05 | TBD | Pending |
+| DATA-01 | Phase 1 | Pending |
+| DATA-02 | Phase 1 | Pending |
+| DATA-03 | Phase 1 | Pending |
+| DATA-04 | Phase 1 | Pending |
+| XFER-01 | Phase 2 | Pending |
+| XFER-02 | Phase 2 | Pending |
+| XFER-03 | Phase 2 | Pending |
+| XFER-04 | Phase 2 | Pending |
+| MET-01 | Phase 3 | Pending |
+| MET-02 | Phase 3 | Pending |
+| MET-03 | Phase 3 | Pending |
+| MET-04 | Phase 4 | Pending |
+| MET-05 | Phase 4 | Pending |
+| OUT-01 | Phase 5 | Pending |
+| OUT-02 | Phase 5 | Pending |
+| OUT-03 | Phase 5 | Pending |
+| OUT-04 | Phase 5 | Pending |
+| OUT-05 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 18 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 18 ⚠️ (resolved at roadmap creation)
+- Mapped to phases: 18 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-06-30*
-*Last updated: 2026-06-30 after initial definition*
+*Last updated: 2026-06-30 after roadmap creation (traceability populated)*
