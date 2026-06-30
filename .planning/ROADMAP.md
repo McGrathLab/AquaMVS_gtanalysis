@@ -44,11 +44,11 @@ Plans:
   2. Each detected corner pixel samples its camera's MVS depth map (bilinear) and back-projects through `RefractiveProjectionModel.cast_ray` to a 3D corner.
   3. Corners with missing or weak depth fall back to the board plane fit from dense points.
   4. Per-frame, per-camera corner-depth dropout rate is computed and reported.
-**Plans**: TBD (~2 plans)
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Subpixel ChArUco detection per camera (AquaCal detector reuse)
-- [ ] 02-02: Depth sampling + refractive back-projection with plane-fit fallback and dropout reporting
+- [ ] 02-01-PLAN.md — Subpixel ChArUco detection per depth-bearing camera on undistorted images (AquaCal detector reuse) [XFER-01]
+- [ ] 02-02-PLAN.md — Depth sampling + refractive back-projection (cast_ray, K_new) with board-plane-fit fallback and per-frame/per-camera dropout report [XFER-02, XFER-03, XFER-04]
 
 ### Phase 3: Scale-Independent Metrics
 **Goal**: The headline non-circular accuracy numbers — flatness, spatial/angular consistency, and cross-camera agreement — computed before any scaling or alignment step.
