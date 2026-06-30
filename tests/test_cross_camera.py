@@ -20,6 +20,7 @@ Run:
 from __future__ import annotations
 
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -29,6 +30,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from analysis.cross_camera import (
     frame_agreement,
     included_cameras,
+    load_corners,
     per_camera_coverage,
     per_corner_dispersion,
 )
@@ -196,6 +198,45 @@ def test_board_blind_camera_no_error() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Test 7: load_corners drops non-physical corners (Z<=0 / non-finite)
+# ---------------------------------------------------------------------------
+
+def test_load_corners_drops_non_physical() -> None:
+    """Corners behind the interface (Z<=0) or non-finite are gated out on load.
+
+    Mirrors the real frame-2 blunder: a degenerate plane_fit corner at Z<0 must
+    not survive into the metrics, while valid direct corners are kept intact.
+    """
+    points = np.array(
+        [
+            [0.10, 0.20, 1.350],   # valid
+            [0.11, 0.21, 1.351],   # valid
+            [0.05, 0.30, -0.400],  # non-physical: behind interface
+            [0.06, 0.31, np.nan],  # non-physical: non-finite
+        ],
+        dtype=np.float32,
+    )
+    with tempfile.TemporaryDirectory() as d:
+        npz_path = Path(d) / "corners.npz"
+        np.savez(
+            npz_path,
+            frame_idx=np.array([2, 2, 2, 2], dtype=np.int32),
+            camera_id=np.array(["camA", "camB", "camC", "camD"], dtype=object),
+            corner_id=np.array([10, 10, 10, 10], dtype=np.int32),
+            points=points,
+            method=np.array(["direct", "direct", "plane_fit", "plane_fit"], dtype=object),
+            confidence=np.array([1.0, 1.0, 0.0, 0.0], dtype=np.float32),
+            pixels=np.zeros((4, 2), dtype=np.float32),
+        )
+        out = load_corners(npz_path)
+
+    assert len(out["points"]) == 2, "expected 2 physical corners to survive"
+    assert set(str(c) for c in out["camera_id"]) == {"camA", "camB"}
+    assert np.all(out["points"][:, 2] > 0.0)
+    assert np.all(np.isfinite(out["points"]))
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
@@ -217,5 +258,8 @@ if __name__ == "__main__":
 
     test_board_blind_camera_no_error()
     print("  [OK] board-blind camera: 0 rows -> absent from coverage -> no error")
+
+    test_load_corners_drops_non_physical()
+    print("  [OK] load_corners: non-physical corners (Z<=0 / non-finite) gated out")
 
     print("test_cross_camera OK")

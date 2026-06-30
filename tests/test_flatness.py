@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import numpy as np
 from analysis.flatness import robust_plane_fit, plane_tilt_deg, board_size_from_corners
+from analysis.corner_transfer import intersect_ray_plane
 
 
 # ── Minimal board_spec stand-in ────────────────────────────────────────────────
@@ -212,6 +213,33 @@ def test_board_size_no_pairs() -> None:
     assert result["n_pairs"] == 0
 
 
+# ── Test: ray-plane intersection rejects non-physical (behind-camera) hits ──────
+
+def test_intersect_ray_plane_rejects_behind_camera() -> None:
+    """intersect_ray_plane returns None when the hit is behind the ray origin.
+
+    Guards the Phase-2 hardening: a degenerate seed plane must not emit a
+    negative-depth corner (the real frame-2 / e3v83e9 failure mode).
+    """
+    origin = np.array([0.0, 0.0, 0.0])
+    direction = np.array([0.0, 0.0, 1.0])  # ray points +Z
+
+    # Plane in front (z = +1.3): valid hit at t = +1.3
+    hit = intersect_ray_plane(origin, direction, np.array([0.0, 0.0, 1.3]),
+                              np.array([0.0, 0.0, 1.0]))
+    assert hit is not None and abs(hit[2] - 1.3) < 1e-9
+
+    # Plane behind (z = -0.4): t < 0 -> non-physical -> None
+    behind = intersect_ray_plane(origin, direction, np.array([0.0, 0.0, -0.4]),
+                                 np.array([0.0, 0.0, 1.0]))
+    assert behind is None, "behind-camera intersection must be rejected"
+
+    # Ray parallel to plane -> None
+    parallel = intersect_ray_plane(origin, np.array([1.0, 0.0, 0.0]),
+                                   np.array([0.0, 0.0, 1.3]), np.array([0.0, 0.0, 1.0]))
+    assert parallel is None, "parallel ray must be rejected"
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -234,5 +262,8 @@ if __name__ == "__main__":
 
     test_board_size_no_pairs()
     print("  [PASS] test_board_size_no_pairs")
+
+    test_intersect_ray_plane_rejects_behind_camera()
+    print("  [PASS] test_intersect_ray_plane_rejects_behind_camera")
 
     print("test_flatness OK")

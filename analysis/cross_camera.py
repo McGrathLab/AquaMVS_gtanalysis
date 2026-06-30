@@ -19,9 +19,12 @@ frame_agreement       -- Per-frame agreement aggregated over co-observed corners
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Dict, Set, Tuple
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -54,14 +57,28 @@ def load_corners(npz_path: str) -> Dict[str, np.ndarray]:
     npz = np.load(str(npz_path), allow_pickle=True)
     camera_id = np.array([str(c) for c in npz["camera_id"]], dtype=object)
     method = np.array([str(m) for m in npz["method"]], dtype=object)
+    points = npz["points"].astype(np.float32)
+
+    # Defensive physical-validity gate: drop any non-physical corners (non-finite
+    # coordinates, or world Z <= 0 i.e. behind the water interface). Phase 2's
+    # hardened transfer should no longer emit these, but gating here keeps the
+    # metric correct even if run against an older corners.npz.
+    keep = np.isfinite(points).all(axis=1) & (points[:, 2] > 0.0)
+    n_dropped = int((~keep).sum())
+    if n_dropped:
+        logger.warning(
+            "load_corners: dropped %d non-physical corner(s) (Z<=0 or non-finite)",
+            n_dropped,
+        )
+
     return {
-        "frame_idx":  npz["frame_idx"].astype(np.int32),
-        "camera_id":  camera_id,
-        "corner_id":  npz["corner_id"].astype(np.int32),
-        "points":     npz["points"].astype(np.float32),
-        "method":     method,
-        "confidence": npz["confidence"].astype(np.float32),
-        "pixels":     npz["pixels"].astype(np.float32),
+        "frame_idx":  npz["frame_idx"].astype(np.int32)[keep],
+        "camera_id":  camera_id[keep],
+        "corner_id":  npz["corner_id"].astype(np.int32)[keep],
+        "points":     points[keep],
+        "method":     method[keep],
+        "confidence": npz["confidence"].astype(np.float32)[keep],
+        "pixels":     npz["pixels"].astype(np.float32)[keep],
     }
 
 

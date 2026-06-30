@@ -103,7 +103,10 @@ def intersect_ray_plane(
     Returns
     -------
     The 3-D intersection point (float64), or None if the ray is nearly parallel
-    to the plane (|dot(direction, normal)| < 1e-9).
+    to the plane (|dot(direction, normal)| < 1e-9) OR the intersection lies
+    behind the ray origin (t <= 0, i.e. behind the camera / interface). A
+    non-physical (behind-camera) intersection is rejected here so a degenerate
+    seed plane cannot emit garbage corners (e.g. negative-depth points).
     """
     origin = np.asarray(origin, dtype=np.float64)
     direction = np.asarray(direction, dtype=np.float64)
@@ -114,6 +117,9 @@ def intersect_ray_plane(
     if abs(denom) < 1e-9:
         return None
     t = float(np.dot(plane_point - origin, plane_normal)) / denom
+    if t <= 0.0:
+        # Intersection behind the camera along the ray — non-physical.
+        return None
     return origin + t * direction
 
 
@@ -410,6 +416,18 @@ def transfer_frame_camera(
                 )
                 plane = fit_board_plane(direct_pts_arr)
 
+        # --- Physical depth band: plane-fit points must land in a plausible
+        #     world-Z range. Prefer this camera's own direct corners (tight,
+        #     pose-specific); else a generous absolute band for the rig volume.
+        #     This rejects non-physical solutions (e.g. behind-interface Z<0)
+        #     from a degenerate seed plane. ---
+        if direct_world_pts:
+            direct_z = np.array([p[2] for p in direct_world_pts], dtype=np.float64)
+            z_lo = float(direct_z.min()) - 0.10   # 10 cm margin around observed board
+            z_hi = float(direct_z.max()) + 0.10
+        else:
+            z_lo, z_hi = 0.10, 3.0                # generous physical band (metres)
+
         # --- Back-project rays for all invalid corners; intersect with plane ---
         invalid_idx = np.where(invalid_mask)[0]
         if len(invalid_idx) > 0:
@@ -429,6 +447,19 @@ def transfer_frame_camera(
                     origins_np[k], directions_np[k], plane[0], plane[1]
                 )
                 if pt3d is None:
+                    n_unrecovered += 1
+                    continue
+
+                # Physical-validity gate: reject non-physical plane-fit points
+                # (outside the plausible board-depth band — e.g. behind the
+                # water interface). These come from degenerate seed planes and
+                # would otherwise inject ~metre-scale blunders into the metrics.
+                if not (z_lo <= float(pt3d[2]) <= z_hi):
+                    logger.debug(
+                        "transfer_frame_camera [%s frame=%d]: rejected non-physical "
+                        "plane_fit corner id=%d Z=%.3f (band [%.2f, %.2f])",
+                        camera, frame.output_idx, int(ids[idx]), float(pt3d[2]), z_lo, z_hi,
+                    )
                     n_unrecovered += 1
                     continue
 

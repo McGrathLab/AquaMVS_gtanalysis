@@ -265,7 +265,23 @@ def main(
     npz_frame_idx = npz["frame_idx"].astype(np.int32)     # (N,)
     npz_corner_id = npz["corner_id"].astype(np.int32)     # (N,)
     npz_points    = npz["points"].astype(np.float32)       # (N,3) metres
-    logger.info("Loaded corners.npz: %d total corner observations", len(npz_frame_idx))
+
+    # Defensive physical-validity gate: drop non-physical corners (non-finite or
+    # world Z <= 0, i.e. behind the water interface). These corrupt both the
+    # corner-seed plane used for slab cropping (MET-01) and the inter-corner
+    # spacing (MET-02). Phase 2's hardened transfer no longer emits them; this
+    # keeps the metric correct against any older corners.npz.
+    _keep = np.isfinite(npz_points).all(axis=1) & (npz_points[:, 2] > 0.0)
+    _n_dropped = int((~_keep).sum())
+    if _n_dropped:
+        logger.warning(
+            "Dropped %d non-physical corner(s) (Z<=0 or non-finite) before metrics",
+            _n_dropped,
+        )
+    npz_frame_idx = npz_frame_idx[_keep]
+    npz_corner_id = npz_corner_id[_keep]
+    npz_points    = npz_points[_keep]
+    logger.info("Loaded corners.npz: %d valid corner observations", len(npz_frame_idx))
 
     # ── Sweep frames ──────────────────────────────────────────────────────────
     per_frame: list[dict] = []
