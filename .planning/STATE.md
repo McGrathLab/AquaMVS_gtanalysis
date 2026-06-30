@@ -24,8 +24,8 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 
 Phase: 3 of 5 (Scale-Independent Metrics)
 Plan: 2 of 2 in current phase (03-01 and 03-02 complete)
-Status: Phase 3 Complete — ready for Phase 4
-Last activity: 2026-06-30 — 03-01 complete: flatness.py + compute_flatness_consistency.py; MET-01 pooled=1.09mm, MET-02 size CV=0.0015; flatness_consistency.json persisted
+Status: Phase 3 Complete (+ post-hoc fix) — ready for Phase 4
+Last activity: 2026-06-30 — Phase 3 metrics corrected. Root-caused the frame-2 cross-camera outlier to 4 non-physical (Z<0, behind-interface) plane-fit-fallback corners from a degenerate seed plane (camera e3v83e9). Hardened Phase 2 transfer (intersect_ray_plane rejects t<=0; world-Z physical band) + added defensive Z>0 gates in the metric loaders. Re-ran transfer + both metrics. CORRECTED HEADLINE: MET-01 flatness pooled=1.093mm; MET-02 size mean=60.01mm CV=0.0015 (tilt 2.8-55.5°); MET-03 cross-camera pooled=3.46mm (was 58.5), per-frame 1.67-6.39mm, frame-2 173.7->2.0mm. plane_fit 10->6, 4 now unrecovered. 14 tests pass. corners.npz regenerated clean (2605).
 
 Progress: [██████░░░░] ~60%
 
