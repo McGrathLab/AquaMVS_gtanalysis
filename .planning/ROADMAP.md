@@ -105,5 +105,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Data & Environment | 2/2 | Complete   | 2026-06-30 |
 | 2. Corner Transfer | 2/2 | Complete   | 2026-06-30 |
 | 3. Scale-Independent Metrics | 2/2 | Complete   | 2026-06-30 |
-| 4. Scale Check & Alignment | 0/1 | Not started | - |
+| 4. Scale Check & Alignment | 1/1 | Complete   | 2026-06-30 |
 | 5. Manuscript Deliverables | 0/2 | Not started | - |
