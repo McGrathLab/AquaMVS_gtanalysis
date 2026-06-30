@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dataset — large binaries, never version-controlled
+data/
+
+# Script outputs
+scripts/__pycache__/
+analysis/__pycache__/
