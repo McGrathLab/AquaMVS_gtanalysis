@@ -28,6 +28,7 @@ Requirements for the headline-first validation. Each maps to roadmap phases.
 - [x] **MET-03**: Cross-camera agreement (§4.3) — quantify whether each camera's depth places the board and transferred corners at a consistent 3D location
 - [x] **MET-04**: Absolute scale (§4.5) — reconstructed square size vs known 60 mm, reported as a consistency check with circularity stated and the Maas (2015) factor-of-two context
 - [x] **MET-05**: Rigid alignment (ICP/Umeyama) of MVS corners to the ideal planar board with inlier RMSE per position; scale-independent metrics reported before any scaling so they cannot absorb scale error
+- [x] **MET-06**: Error-direction decomposition — split residuals into range-vs-lateral (camera/refraction frame, the refraction-relevant test) and in-plane-vs-out-of-plane (board frame). *(Added 2026-06-30 post-Phase-4; the refraction signature: range_dominance=4.41.)*
 
 ### Deliverables
 
@@ -76,6 +77,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 | MET-03 | Phase 3 | Complete |
 | MET-04 | Phase 4 | Complete |
 | MET-05 | Phase 4 | Complete |
+| MET-06 | Phase 4 | Complete |
 | OUT-01 | Phase 5 | Pending |
 | OUT-02 | Phase 5 | Pending |
 | OUT-03 | Phase 5 | Pending |
@@ -83,8 +85,8 @@ Which phases cover which requirements. Populated during roadmap creation.
 | OUT-05 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 18 total
-- Mapped to phases: 18 ✓
+- v1 requirements: 19 total (MET-06 added 2026-06-30 post-Phase-4)
+- Mapped to phases: 19 ✓
 - Unmapped: 0
 
 ---

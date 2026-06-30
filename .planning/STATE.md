@@ -24,7 +24,8 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 
 Phase: 4 of 5 (Scale Check & Alignment)
 Plan: 1 of 1 in current phase (04-01 complete)
-Status: Phase 4 Complete — ready for Phase 5 (Manuscript Deliverables)
+Status: Phase 4 Complete (+ MET-06 decomposition added) — ready for Phase 5 (Manuscript Deliverables)
+MET-06 addition (user-requested, 2026-06-30): error-direction decomposition. analysis/error_decomposition.py + compute_error_decomposition.py → data/analysis_output/error_decomposition.json. RANGE-vs-LATERAL (camera/refraction frame, cross-camera offset projected onto in-water cast_ray): pooled range_dominance=4.41 (range 3.64mm vs lateral 0.82mm; range-dominated every frame 3.16-4.89x = REFRACTIVE SIGNATURE). Board-frame (MET-05 rigid residuals): out-of-plane 0.79mm vs in-plane 0.70mm. 25 tests pass. Phase 5 must add: a results-table row, a range-vs-lateral figure, and a methods sentence ("residual error is range-dominated, consistent with refraction").
 Last activity: 2026-06-30 — Phase 4 scale/alignment consistency check shipped. Closed-form Umeyama (analysis/alignment.py) aligns per-frame consensus MVS corners to the ideal 60mm board with known corner_id correspondence (no ICP). MET-05 pooled rigid inlier RMSE=1.055mm (per-frame 0.66-1.61mm, 667 inliers/8 frames; outlier rule max(5mm, median+3*MAD)). MET-04 scale factor mean=1.00040 (+0.040%, range -0.153..+0.390%), board size mean=60.013mm — labeled a PARTLY CIRCULAR consistency check (60mm is the calibration anchor) framed against Maas (2015) factor-of-two. Ordering invariant PROVEN: Phase 3 JSON hashes byte-identical before/after (tests/check_ordering_invariant.py); scale_alignment.json on separate data/analysis_output path; compute refuses (exit 1) if Phase 3 absent. No "0.5 %" misread anywhere. entrypoint.py untouched (OUT-05 deferred to Phase 5). All 5 tests/checkers exit 0.
 
 Progress: [████████░░] ~80%
