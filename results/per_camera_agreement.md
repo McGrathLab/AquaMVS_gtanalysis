@@ -23,11 +23,11 @@ Camera exclusions from a given frame indicate that the camera did not co-observe
 
 | Frame | Cameras Included | RMS (mm) |
 | --- | --- | --- |
-| 1 | 7 | 4.871 |
+| 1 | 7 | 1.516 |
 | 2 | 9 | 1.997 |
 | 3 | 8 | 1.891 |
-| 4 | 7 | 3.347 |
+| 4 | 7 | 2.166 |
 | 6 | 6 | 1.820 |
-| 7 | 8 | 6.394 |
+| 7 | 8 | 1.853 |
 | 8 | 6 | 1.670 |
 | 9 | 12 | 1.998 |

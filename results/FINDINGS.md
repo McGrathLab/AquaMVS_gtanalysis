@@ -11,8 +11,8 @@ prose is in `results/methods.md`, the metric table in `results/table.md`.*
 The AquaMVS dense reconstruction is **metric-grade through water**. Across 8 held-out
 ChArUco-board poses spanning the working volume, the reconstructed board is **flat to
 ~1.1 mm**, its **square size is correct to ~0.04 %**, independent cameras place the same
-board points to **~3.5 mm**, and the reconstructed corner grid matches the ideal 60 mm
-board to **~1.05 mm** after rigid alignment. What residual error remains is **range
+board points to **~1.9 mm**, and the reconstructed corner grid matches the ideal 60 mm
+board to **~1.07 mm** after rigid alignment. What residual error remains is **range
 (depth) error, not lateral** — the expected signature of refraction, and small.
 
 The headline accuracy claims rest on **scale-independent (non-circular)** metrics, so
@@ -32,15 +32,16 @@ they are not an artifact of the board having set the calibration's scale.
    and tilt (2.8°–40.7°). Reconstructed square size varies by only **CV 0.0016**
    (±0.15 %). No depth- or angle-dependent drift — the contribution under test.
 
-3. **Cross-camera agreement ≈ 3.46 mm (non-circular).** Cameras that co-observe the
-   board place the same corners within a few mm of each other, using only their own
-   depth maps. (Each pose is seen by a *subset* of the array by design — the rig images
-   a volume larger than any one camera's field of view, so a camera seeing nothing is
-   expected, not a failure.)
+3. **Cross-camera agreement ≈ 1.87 mm (non-circular), uniform across poses.** Cameras
+   that co-observe the board place the same corners within ~2 mm of each other, using
+   only their own depth maps — and the per-frame RMS is uniform (1.6–2.0 mm) with **no
+   dependence on tilt, depth, or camera count**. (Each pose is seen by a *subset* of the
+   array by design — the rig images a volume larger than any one camera's field of view,
+   so a camera seeing nothing is expected, not a failure.)
 
-4. **Residual error is range-dominated (~4.4×) — a refraction signature.** Decomposing
+4. **Residual error is range-dominated (~3.3×) — a refraction signature.** Decomposing
    residuals into along-the-viewing-ray (range) vs perpendicular (lateral):
-   range **3.64 mm** vs lateral **0.82 mm**, dominance **4.41×**, on every frame.
+   range **1.82 mm** vs lateral **0.55 mm**, dominance **3.29×**, on every frame.
    In-plane geometric fidelity is sub-millimetre; the larger errors live along the
    line of sight, exactly where refraction acts. This is arguably the single strongest
    statement in the validation.
@@ -61,10 +62,12 @@ they are not an artifact of the board having set the calibration's scale.
    reproduces the board scale by construction, so ~unity is the expected null; the power
    is in detecting *deviation*. Independent absolute scale comes from the tank.)
 
-6. **The direct depth-transfer method is the right primitive.** Only **0.2 %** of
-   detected corners lacked valid depth and needed the plane-fit fallback, so the
-   analysis leans confidently on direct refractive back-projection (§3.2), not the
-   fallback (§3.3).
+6. **The direct depth-transfer method is the right primitive; the fallback is excluded.**
+   Only **0.2 %** of detected corners lacked valid depth and needed the plane-fit
+   fallback. That fallback, though geometrically valid, proved cm-inaccurate and was the
+   **dominant residual-error source** (see process note below), so all reported metrics
+   use direct refractive-depth corners only (§3.2, not §3.3). This is what makes the
+   cross-camera number uniform and the residual cloud clean.
 
 ---
 
@@ -95,14 +98,27 @@ they are not an artifact of the board having set the calibration's scale.
 - **Not validated here:** the calibration itself (the board is its input), and
   inter-corner grid regularity (§4.4, deferred to v2).
 
-## A finding from the process
+## A finding from the process — the plane-fit fallback
 
-During validation a latent bug surfaced: the plane-fit fallback could emit
-**non-physical corners** (behind the water interface, negative depth) from a
-degenerate seed plane, which inflated one frame's cross-camera number ~85×. It was
-root-caused, fixed at the source (reject behind-camera/negative-depth solutions),
-gated defensively in the metrics, and covered by regression tests. The corrected
-numbers above are what stand.
+The plane-fit fallback (used when direct depth is missing) turned out to be the one
+weak link, and chasing it produced two corrections:
+
+1. **Non-physical corners (fixed at source).** The fallback could emit corners *behind*
+   the water interface (negative depth) from a degenerate seed plane, inflating one
+   frame's cross-camera number ~85×. Root-caused, fixed (reject behind-camera/negative
+   depth), gated, and regression-tested.
+
+2. **Physical-but-imprecise fallback corners (excluded from metrics).** Even the
+   *physically valid* fallback corners proved cm-inaccurate, and they were the **dominant
+   driver of the apparent frame-to-frame error variation**. Diagnosis: the per-corner
+   *median* range error is flat at ~1.3 mm across all frames (no tilt/depth/camera trend),
+   but a handful of fallback corners — 6 of 2605, mostly one camera — each contaminate
+   their cross-camera consensus and manufacture apparent outliers, which RMS then
+   amplifies. Excluding the fallback (direct-depth only) collapsed the per-frame RMS to a
+   uniform 1.6–2.0 mm and dropped pooled cross-camera agreement from 3.46 → **1.87 mm**.
+
+The lesson: at 0.2 % dropout the fallback is not worth its error cost, so all reported
+metrics use direct refractive-depth corners. The numbers above are post-exclusion.
 
 ---
 

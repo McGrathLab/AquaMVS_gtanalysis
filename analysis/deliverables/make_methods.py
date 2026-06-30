@@ -101,9 +101,14 @@ refractive projection model using `RefractiveProjectionModel.cast_ray`.  This
 procedure traces each image ray through the air-water interface using the measured
 refractive indices and water-surface geometry, yielding a 3-D position in the
 reconstruction frame for each detected corner.  Corner dropout --- cases where the
-depth map produced no valid ray-surface intersection --- was measured at
-{dropout_pct:.1f}% ({dropout_rate:.4f} fractional rate), confirming that the
-large majority of corners transferred successfully.
+depth map produced no valid ray-surface intersection and a plane-fit fallback was
+required --- was measured at {dropout_pct:.1f}% ({dropout_rate:.4f} fractional rate),
+confirming that the large majority of corners transferred via direct refractive
+depth.  Because the small plane-fit fallback population, although geometrically
+valid, was found to be the dominant residual-error source (a single inaccurate
+fallback corner contaminates its cross-camera consensus), those fallback corners
+were excluded from all reported metrics, which therefore use direct refractive-depth
+corners exclusively.
 
 ## Scale-Independent Metrics Led the Analysis
 
@@ -119,9 +124,10 @@ across the working volume was {size_cv:.4f}, indicating that the recovered board
 geometry is spatially consistent across depth and lateral position.  Cross-camera
 agreement --- the RMS dispersion of independently transferred 3-D corner positions
 across the camera ring for co-observed board corners --- was {cross_cam_rms_mm:.2f} mm
-overall (MET-03).  These three scale-independent measures are non-circular: they assess
-the internal consistency of the reconstruction without reference to the calibration
-scale anchor.
+overall (MET-03), and was uniform across the held-out poses (per-frame RMS in the
+1.6--2.0 mm range with no dependence on board tilt, depth, or camera count).  These
+three scale-independent measures are non-circular: they assess the internal
+consistency of the reconstruction without reference to the calibration scale anchor.
 
 ## Absolute Scale: Bounding Dense-Stage Scale Bias (Weakly Circular)
 

@@ -201,18 +201,20 @@ def test_board_blind_camera_no_error() -> None:
 # Test 7: load_corners drops non-physical corners (Z<=0 / non-finite)
 # ---------------------------------------------------------------------------
 
-def test_load_corners_drops_non_physical() -> None:
-    """Corners behind the interface (Z<=0) or non-finite are gated out on load.
+def test_load_corners_drops_non_physical_and_fallback() -> None:
+    """load_corners keeps only physically-valid DIRECT corners.
 
-    Mirrors the real frame-2 blunder: a degenerate plane_fit corner at Z<0 must
-    not survive into the metrics, while valid direct corners are kept intact.
+    Drops: behind-interface (Z<=0), non-finite, and plane-fit fallback corners
+    (even when geometrically valid) — the fallback is the dominant error source,
+    so all metrics use direct refractive-depth corners only.
     """
     points = np.array(
         [
-            [0.10, 0.20, 1.350],   # valid
-            [0.11, 0.21, 1.351],   # valid
-            [0.05, 0.30, -0.400],  # non-physical: behind interface
-            [0.06, 0.31, np.nan],  # non-physical: non-finite
+            [0.10, 0.20, 1.350],   # direct, valid  -> keep
+            [0.11, 0.21, 1.351],   # direct, valid  -> keep
+            [0.05, 0.30, -0.400],  # plane_fit, behind interface -> drop
+            [0.06, 0.31, np.nan],  # plane_fit, non-finite       -> drop
+            [0.12, 0.22, 1.349],   # plane_fit but PHYSICALLY VALID -> drop (fallback)
         ],
         dtype=np.float32,
     )
@@ -220,20 +222,21 @@ def test_load_corners_drops_non_physical() -> None:
         npz_path = Path(d) / "corners.npz"
         np.savez(
             npz_path,
-            frame_idx=np.array([2, 2, 2, 2], dtype=np.int32),
-            camera_id=np.array(["camA", "camB", "camC", "camD"], dtype=object),
-            corner_id=np.array([10, 10, 10, 10], dtype=np.int32),
+            frame_idx=np.array([2, 2, 2, 2, 2], dtype=np.int32),
+            camera_id=np.array(["camA", "camB", "camC", "camD", "camE"], dtype=object),
+            corner_id=np.array([10, 10, 10, 10, 11], dtype=np.int32),
             points=points,
-            method=np.array(["direct", "direct", "plane_fit", "plane_fit"], dtype=object),
-            confidence=np.array([1.0, 1.0, 0.0, 0.0], dtype=np.float32),
-            pixels=np.zeros((4, 2), dtype=np.float32),
+            method=np.array(
+                ["direct", "direct", "plane_fit", "plane_fit", "plane_fit"], dtype=object),
+            confidence=np.array([1.0, 1.0, 0.0, 0.0, 1.0], dtype=np.float32),
+            pixels=np.zeros((5, 2), dtype=np.float32),
         )
         out = load_corners(npz_path)
 
-    assert len(out["points"]) == 2, "expected 2 physical corners to survive"
+    assert len(out["points"]) == 2, "only valid direct corners should survive"
     assert set(str(c) for c in out["camera_id"]) == {"camA", "camB"}
+    assert np.all(out["method"] == "direct")
     assert np.all(out["points"][:, 2] > 0.0)
-    assert np.all(np.isfinite(out["points"]))
 
 
 # ---------------------------------------------------------------------------
@@ -259,7 +262,7 @@ if __name__ == "__main__":
     test_board_blind_camera_no_error()
     print("  [OK] board-blind camera: 0 rows -> absent from coverage -> no error")
 
-    test_load_corners_drops_non_physical()
-    print("  [OK] load_corners: non-physical corners (Z<=0 / non-finite) gated out")
+    test_load_corners_drops_non_physical_and_fallback()
+    print("  [OK] load_corners: non-physical + plane-fit fallback corners gated out")
 
     print("test_cross_camera OK")

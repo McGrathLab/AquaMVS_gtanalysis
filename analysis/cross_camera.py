@@ -59,15 +59,24 @@ def load_corners(npz_path: str) -> Dict[str, np.ndarray]:
     method = np.array([str(m) for m in npz["method"]], dtype=object)
     points = npz["points"].astype(np.float32)
 
-    # Defensive physical-validity gate: drop any non-physical corners (non-finite
-    # coordinates, or world Z <= 0 i.e. behind the water interface). Phase 2's
-    # hardened transfer should no longer emit these, but gating here keeps the
-    # metric correct even if run against an older corners.npz.
-    keep = np.isfinite(points).all(axis=1) & (points[:, 2] > 0.0)
+    # Validity gate, two parts:
+    #  1. Physical: drop non-finite / behind-interface (Z<=0) corners.
+    #  2. Direct-depth only: drop the plane-fit FALLBACK corners. Although they
+    #     are only ~0.2% of corners, they are cm-inaccurate (physical but imprecise)
+    #     and were shown to be the dominant source of per-frame cross-camera RMS
+    #     spikes — a single bad fallback corner contaminates its cross-camera
+    #     consensus and manufactures apparent outliers. All reported metrics
+    #     therefore use direct refractive-depth corners only.
+    keep = (
+        np.isfinite(points).all(axis=1)
+        & (points[:, 2] > 0.0)
+        & (method != "plane_fit")
+    )
     n_dropped = int((~keep).sum())
     if n_dropped:
         logger.warning(
-            "load_corners: dropped %d non-physical corner(s) (Z<=0 or non-finite)",
+            "load_corners: dropped %d corner(s) (non-physical or plane-fit fallback); "
+            "metrics use direct-depth corners only",
             n_dropped,
         )
 

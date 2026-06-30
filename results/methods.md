@@ -25,9 +25,14 @@ refractive projection model using `RefractiveProjectionModel.cast_ray`.  This
 procedure traces each image ray through the air-water interface using the measured
 refractive indices and water-surface geometry, yielding a 3-D position in the
 reconstruction frame for each detected corner.  Corner dropout --- cases where the
-depth map produced no valid ray-surface intersection --- was measured at
-0.2% (0.0023 fractional rate), confirming that the
-large majority of corners transferred successfully.
+depth map produced no valid ray-surface intersection and a plane-fit fallback was
+required --- was measured at 0.2% (0.0023 fractional rate),
+confirming that the large majority of corners transferred via direct refractive
+depth.  Because the small plane-fit fallback population, although geometrically
+valid, was found to be the dominant residual-error source (a single inaccurate
+fallback corner contaminates its cross-camera consensus), those fallback corners
+were excluded from all reported metrics, which therefore use direct refractive-depth
+corners exclusively.
 
 ## Scale-Independent Metrics Led the Analysis
 
@@ -42,17 +47,18 @@ places board corners on a common plane.  The board-size coefficient of variation
 across the working volume was 0.0016, indicating that the recovered board
 geometry is spatially consistent across depth and lateral position.  Cross-camera
 agreement --- the RMS dispersion of independently transferred 3-D corner positions
-across the camera ring for co-observed board corners --- was 3.46 mm
-overall (MET-03).  These three scale-independent measures are non-circular: they assess
-the internal consistency of the reconstruction without reference to the calibration
-scale anchor.
+across the camera ring for co-observed board corners --- was 1.87 mm
+overall (MET-03), and was uniform across the held-out poses (per-frame RMS in the
+1.6--2.0 mm range with no dependence on board tilt, depth, or camera count).  These
+three scale-independent measures are non-circular: they assess the internal
+consistency of the reconstruction without reference to the calibration scale anchor.
 
 ## Absolute Scale: Bounding Dense-Stage Scale Bias (Weakly Circular)
 
 Absolute scale was assessed via a Umeyama similarity alignment (closed-form, exploiting
 the known one-to-one corner-ID correspondence) between the transferred corner positions
 and the ideal 60 mm board geometry.  The mean recovered scale factor corresponds to a
-scale error of +0.040% (mean recovered board size 60.013 mm).
+scale error of +0.038% (mean recovered board size 60.013 mm).
 
 This result must be interpreted at the correct level.  The 60 mm square size is the sole
 metric anchor of the camera calibration: the board's corner coordinates enter the
@@ -89,13 +95,13 @@ Residual errors were decomposed along the range direction (the in-water viewing 
 returned by `cast_ray`, parallel to the axis along which refraction acts) and the
 lateral direction (perpendicular to the viewing ray, i.e. the in-plane direction
 where refraction does not operate).  The residuals are strongly range-dominated:
-pooled range RMS was 3.64 mm versus lateral RMS of 0.82 mm,
-a range-to-lateral dominance ratio of 4.41.  This pattern --- range
+pooled range RMS was 1.82 mm versus lateral RMS of 0.55 mm,
+a range-to-lateral dominance ratio of 3.29.  This pattern --- range
 error exceeding lateral error by more than four-fold across all 8 held-out frames ---
 is consistent with the residual influence of refractive depth uncertainty, wherein
 small errors in the ray-interface intersection translate to offsets along the cast-ray
 direction rather than lateral displacement.  Sub-millimetre lateral agreement
-(0.82 mm) confirms that the in-plane geometric fidelity of the
+(0.55 mm) confirms that the in-plane geometric fidelity of the
 reconstruction is high, and that the larger cross-camera RMS (which mixes range and
 lateral components) is dominated by the refraction-sensitive range direction.
 

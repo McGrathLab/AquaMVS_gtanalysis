@@ -265,18 +265,23 @@ def main(
     npz_frame_idx = npz["frame_idx"].astype(np.int32)     # (N,)
     npz_corner_id = npz["corner_id"].astype(np.int32)     # (N,)
     npz_points    = npz["points"].astype(np.float32)       # (N,3) metres
+    npz_method    = np.array([str(m) for m in npz["method"]], dtype=object)
 
-    # Defensive physical-validity gate: drop non-physical corners (non-finite or
-    # world Z <= 0, i.e. behind the water interface). These corrupt both the
-    # corner-seed plane used for slab cropping (MET-01) and the inter-corner
-    # spacing (MET-02). Phase 2's hardened transfer no longer emits them; this
-    # keeps the metric correct against any older corners.npz.
-    _keep = np.isfinite(npz_points).all(axis=1) & (npz_points[:, 2] > 0.0)
+    # Validity gate: drop non-physical corners (non-finite or Z<=0) AND the
+    # plane-fit FALLBACK corners. The fallback (~0.2%) is physical but cm-inaccurate
+    # and is the dominant residual-error source; all reported metrics use direct
+    # refractive-depth corners only. Both the corner-seed plane (MET-01 slab crop)
+    # and inter-corner spacing (MET-02) use this gated set.
+    _keep = (
+        np.isfinite(npz_points).all(axis=1)
+        & (npz_points[:, 2] > 0.0)
+        & (npz_method != "plane_fit")
+    )
     _n_dropped = int((~_keep).sum())
     if _n_dropped:
         logger.warning(
-            "Dropped %d non-physical corner(s) (Z<=0 or non-finite) before metrics",
-            _n_dropped,
+            "Dropped %d corner(s) (non-physical or plane-fit fallback); "
+            "metrics use direct-depth corners only", _n_dropped,
         )
     npz_frame_idx = npz_frame_idx[_keep]
     npz_corner_id = npz_corner_id[_keep]
