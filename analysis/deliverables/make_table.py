@@ -105,7 +105,7 @@ def _build_rows() -> list[list[str]]:
             "Absolute scale (MET-04)",
             f"{scale_err_pct:+.2f}% / {board_size_mm:.3f} mm",
             "% / mm",
-            "consistency check (partly circular)",
+            "bounds dense-stage scale bias (weakly circular; scale traces to board via calibration)",
         ],
     ]
     return rows

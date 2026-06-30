@@ -4,4 +4,4 @@ Spatial/angular consistency (MET-02),board-size CV 0.0016; tilt 2.8-40.7,deg / d
 Cross-camera agreement (MET-03),3.46,mm,scale-independent (non-circular)
 Rigid inlier RMSE (MET-05),1.05,mm,scale-independent (non-circular)
 Range-vs-lateral dominance (MET-06),4.41 (range 3.64 mm vs lateral 0.82 mm),ratio,"scale-independent (non-circular, refraction signature)"
-Absolute scale (MET-04),+0.04% / 60.013 mm,% / mm,consistency check (partly circular)
+Absolute scale (MET-04),+0.04% / 60.013 mm,% / mm,bounds dense-stage scale bias (weakly circular; scale traces to board via calibration)

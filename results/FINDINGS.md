@@ -45,10 +45,21 @@ they are not an artifact of the board having set the calibration's scale.
    line of sight, exactly where refraction acts. This is arguably the single strongest
    statement in the validation.
 
-5. **Absolute scale is correct to +0.04 % — but reported only as a consistency check.**
-   Reconstructed square size 60.013 mm vs the known 60 mm. Because the board's square
-   size **is** the calibration's scale anchor, near-zero scale error is partly true by
-   construction. We state this circularity openly and do not lead with it.
+5. **Absolute scale is correct to +0.04 % — and this bounds dense-stage scale bias
+   (weakly circular, not a tautology).** Reconstructed square size 60.013 mm vs the
+   known 60 mm. The 60 mm square size is the *sole* metric anchor of the camera
+   calibration (verified in the AquaCal source: the board's corners enter as fixed
+   object points in metres; extrinsics, board poses, water distance, and intrinsics are
+   all free; no independent baseline/ruler is used). So this measurement **cannot
+   independently establish absolute scale** — that traces back to the board. *But* the
+   dense MVS stage is one level removed: it reconstructs the corner spacing from
+   photometric depth (RoMa/fusion/in-dense refraction), never from the board model. A
+   dense stage with a systematic scale/depth bias would reconstruct the board at the
+   wrong size *even with perfect calibration*. The +0.04 % agreement (CV 0.0016 across
+   the volume) therefore **bounds any dense-stage scale bias to < 0.1 %** — a real, if
+   secondary, result. (Caveat: correct triangulation over the calibrated baselines
+   reproduces the board scale by construction, so ~unity is the expected null; the power
+   is in detecting *deviation*. Independent absolute scale comes from the tank.)
 
 6. **The direct depth-transfer method is the right primitive.** Only **0.2 %** of
    detected corners lacked valid depth and needed the plane-fit fallback, so the
@@ -66,16 +77,17 @@ they are not an artifact of the board having set the calibration's scale.
   **before** any scale-dependent alignment runs, so a scale error cannot be absorbed
   into the headline numbers. This was proven (the scale-independent artifacts are
   byte-identical before and after the alignment step).
-- **Scale stated honestly.** Absolute scale is a consistency check with the circularity
-  named, benchmarked against the **Maas (2015) factor-of-two** refractive precision
-  penalty (not a "0.5 %" figure).
+- **Scale stated honestly.** Absolute scale is reported as a bound on dense-stage scale
+  bias (weakly circular — it can't establish absolute scale independently), benchmarked
+  against the **Maas (2015) factor-of-two** refractive precision penalty.
 
 ---
 
 ## Limitations & scope
 
-- **Scale is partly circular** by design (see above); independent absolute scale comes
-  from the separate tank measurement in the manuscript, which this pairs with.
+- **Scale is weakly circular**: it bounds dense-stage scale bias but cannot establish
+  absolute scale on its own (that traces to the board through calibration). Independent
+  absolute scale comes from the separate tank measurement, which this pairs with.
 - **One reconstruction pathway.** Validated on the RoMa pathway only; cross-pathway
   agreement (RoMa vs LightGlue) is deferred to v2 (needs a second reconstruction).
 - **8 board poses.** Good spatial/tilt spread, but a modest pose count; the two

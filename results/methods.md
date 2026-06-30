@@ -47,20 +47,41 @@ overall (MET-03).  These three scale-independent measures are non-circular: they
 the internal consistency of the reconstruction without reference to the calibration
 scale anchor.
 
-## Absolute Scale as a Consistency Check (Partly Circular)
+## Absolute Scale: Bounding Dense-Stage Scale Bias (Weakly Circular)
 
 Absolute scale was assessed via a Umeyama similarity alignment (closed-form, exploiting
 the known one-to-one corner-ID correspondence) between the transferred corner positions
 and the ideal 60 mm board geometry.  The mean recovered scale factor corresponds to a
 scale error of +0.040% (mean recovered board size 60.013 mm).
-This result must be interpreted with care: the 60 mm square size is the same measurement
-used as the calibration scale anchor, so recovering a scale close to unity is partly
-expected by construction --- a partly circular consistency check.  The circularity
-concern is partially resolved by the spatial breadth of the validation set (8 frames
-covering a range of depths and lateral positions) and by the fact that the precision
-board and the independent tank reference are separate physical objects, but it does not
-vanish entirely.  This scale result is therefore reported as a secondary consistency
-check after the scale-independent headline, not as the primary accuracy claim.
+
+This result must be interpreted at the correct level.  The 60 mm square size is the sole
+metric anchor of the camera calibration: the board's corner coordinates enter the
+calibration bundle adjustment as fixed object points in metres, while camera extrinsics,
+per-frame board poses, the water-surface distance, and intrinsics are all free, and no
+independent metric reference (baseline, scale bar, or known distance) is used.  The
+absolute scale of the calibration is therefore set by the board, and recovering the
+board's size *from the calibration* would be fully circular.
+
+The dense reconstruction validated here, however, is one level removed from the
+calibration.  It inherits the metric frame from calibration but produces the reconstructed
+corner spacing from photometric depth estimation (RoMa/plane-sweep, fusion, in-dense
+refraction handling) --- it never uses the board model.  Consequently this measurement is
+not a tautology: a dense stage carrying a systematic scale or depth bias (for example an
+in-dense refraction treatment inconsistent with the calibration, or a fusion step that
+systematically expands or contracts surfaces) would reconstruct the board at the wrong
+size even given a perfect, board-anchored calibration, on these held-out poses.  The
+observed agreement therefore bounds any systematic scale bias of the dense MVS stage to
+below roughly 0.1% across the working volume.
+
+Two caveats keep the claim honest.  First, correct triangulation over the calibrated
+camera baselines reproduces the calibrated (board) scale by construction, so a near-unity
+scale is the expected null result; the metric's value lies in detecting *deviation* from
+it, not in establishing scale independently.  Second, this measurement cannot establish
+absolute scale on its own --- that traces back to the board through the calibration; the
+independent tank reference, a separate physical object, carries absolute scale in the
+companion analysis.  This scale result is thus reported as supporting evidence (a bound on
+dense-stage scale bias) after the scale-independent headline, not as the primary accuracy
+claim.
 
 ## Range-Dominated Residuals as a Refraction Signature
 
