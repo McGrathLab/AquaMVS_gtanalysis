@@ -59,11 +59,11 @@ Plans:
   2. Board size and flatness variation across position, depth, and tilt over the working volume is measured and reported per frame.
   3. Cross-camera agreement quantifies whether each camera's depth places the board and transferred corners at a consistent 3D location.
   4. All three metrics are produced and recorded before any alignment or scaling step runs.
-**Plans**: TBD (~2 plans)
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Flatness (plane-fit RMS) + spatial/angular consistency across the working volume
-- [ ] 03-02: Cross-camera board-localization agreement
+- [ ] 03-01-PLAN.md — Flatness (RANSAC+SVD plane-fit RMS, MET-01) + spatial/angular consistency across the working volume (MET-02) [dense cloud + corners]
+- [ ] 03-02-PLAN.md — Cross-camera board-localization agreement (MET-03) [sparse corners.npz]
 
 ### Phase 4: Scale Check & Alignment
 **Goal**: Absolute scale and rigid alignment reported honestly as consistency checks, run only after the scale-independent metrics are locked.
@@ -104,6 +104,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Data & Environment | 2/2 | Complete   | 2026-06-30 |
 | 2. Corner Transfer | 2/2 | Complete   | 2026-06-30 |
-| 3. Scale-Independent Metrics | 0/2 | Not started | - |
+| 3. Scale-Independent Metrics | 0/2 | Planned | - |
 | 4. Scale Check & Alignment | 0/1 | Not started | - |
 | 5. Manuscript Deliverables | 0/2 | Not started | - |
