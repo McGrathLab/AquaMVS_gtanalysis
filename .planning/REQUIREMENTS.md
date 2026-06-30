@@ -9,7 +9,7 @@ Requirements for the headline-first validation. Each maps to roadmap phases.
 
 ### Data & Setup
 
-- [ ] **DATA-01**: Input dataset is extracted into `./data/` (gitignored); the Downloads zip is deleted only after extraction is verified complete
+- [x] **DATA-01**: Input dataset is extracted into `./data/` (gitignored); the Downloads zip is deleted only after extraction is verified complete
 - [ ] **DATA-02**: Analysis loads calibration (camera params, refractive interface, board spec) and per-camera/per-frame depth maps + fused clouds from the extracted data
 - [ ] **DATA-03**: The validation set is the 8 held-out frames; output indices 0 and 5 (raw frames 0 and 3930) are excluded from every reported metric
 - [ ] **DATA-04**: Analysis runs in the `AquaMVS` conda env with `aquamvs` v1.5.2 importable and a single documented entrypoint
@@ -63,7 +63,7 @@ Which phases cover which requirements. Populated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 1 | Pending |
+| DATA-01 | Phase 1 | Complete |
 | DATA-02 | Phase 1 | Pending |
 | DATA-03 | Phase 1 | Pending |
 | DATA-04 | Phase 1 | Pending |
