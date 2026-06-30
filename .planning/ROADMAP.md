@@ -89,11 +89,12 @@ Plans:
   3. A per-camera board-localization agreement output is produced.
   4. A drafted methods paragraph covers the known target, the measured 2-of-10 overlap and 8 held-out frames, corner transfer through refractive depth maps, scale-independent metrics led, and scale as a consistency check, citing de Jesus, Menna & Nocerino, and Maas.
   5. One entrypoint regenerates all artifacts from the extracted data.
-**Plans**: TBD (~2 plans)
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Results table + spatial-consistency figure + per-camera agreement output (DissertationFigures style)
-- [ ] 05-02: Drafted methods paragraph + single-entrypoint reproducibility wiring
+- [ ] 05-01-PLAN.md — Deliverables subpackage (importable DissertationFigures wrapper + artifact loaders) + results table OUT-01 (md/tex/csv) + per-camera agreement OUT-03 [Wave 1]
+- [ ] 05-02-PLAN.md — Spatial-consistency figure OUT-02 + range-vs-lateral refraction-signature figure MET-06, DissertationFigures-styled, svg+pdf+png [Wave 2]
+- [ ] 05-03-PLAN.md — Methods paragraph OUT-04 + single reproducible entrypoint run_all.py OUT-05 orchestrating all stages in order [Wave 3]
 
 ## Progress
 
@@ -106,4 +107,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Corner Transfer | 2/2 | Complete   | 2026-06-30 |
 | 3. Scale-Independent Metrics | 2/2 | Complete   | 2026-06-30 |
 | 4. Scale Check & Alignment | 1/1 | Complete   | 2026-06-30 |
-| 5. Manuscript Deliverables | 0/2 | Not started | - |
+| 5. Manuscript Deliverables | 0/3 | Not started | - |
