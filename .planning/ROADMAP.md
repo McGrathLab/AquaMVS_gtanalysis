@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Data & Environment** - Extract the dataset and stand up a reproducible loader in the AquaMVS env (completed 2026-06-30)
 - [x] **Phase 2: Corner Transfer** - Move image-detected ChArUco corners into the MVS frame through refractive depth maps (completed 2026-06-30)
-- [ ] **Phase 3: Scale-Independent Metrics** - Compute flatness, spatial consistency, and cross-camera agreement before any scaling
+- [x] **Phase 3: Scale-Independent Metrics** - Compute flatness, spatial consistency, and cross-camera agreement before any scaling (completed 2026-06-30)
 - [ ] **Phase 4: Scale Check & Alignment** - Report absolute scale and rigid alignment as honest consistency checks
 - [ ] **Phase 5: Manuscript Deliverables** - Assemble the table, figure, per-camera output, and methods paragraph from one entrypoint
 
@@ -62,8 +62,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Flatness (RANSAC+SVD plane-fit RMS, MET-01) + spatial/angular consistency across the working volume (MET-02) [dense cloud + corners]
-- [ ] 03-02-PLAN.md — Cross-camera board-localization agreement (MET-03) [sparse corners.npz]
+- [x] 03-01-PLAN.md — Flatness (RANSAC+SVD plane-fit RMS, MET-01) + spatial/angular consistency across the working volume (MET-02) [dense cloud + corners]
+- [x] 03-02-PLAN.md — Cross-camera board-localization agreement (MET-03) [sparse corners.npz]
 
 ### Phase 4: Scale Check & Alignment
 **Goal**: Absolute scale and rigid alignment reported honestly as consistency checks, run only after the scale-independent metrics are locked.
@@ -104,6 +104,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Data & Environment | 2/2 | Complete   | 2026-06-30 |
 | 2. Corner Transfer | 2/2 | Complete   | 2026-06-30 |
-| 3. Scale-Independent Metrics | 1/2 | In Progress|  |
+| 3. Scale-Independent Metrics | 2/2 | Complete   | 2026-06-30 |
 | 4. Scale Check & Alignment | 0/1 | Not started | - |
 | 5. Manuscript Deliverables | 0/2 | Not started | - |

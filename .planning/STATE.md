@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: unknown
-last_updated: "2026-06-30T16:17:00.676Z"
+status: in_progress
+last_updated: "2026-06-30T16:18:00Z"
 progress:
-  total_phases: 3
+  total_phases: 5
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 5
+  total_plans: 8
+  completed_plans: 7
 ---
 
 # Project State
@@ -22,12 +22,12 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 
 ## Current Position
 
-Phase: 2 of 5 (Corner Transfer)
-Plan: 2 of 3 in current phase (02-02 complete)
-Status: In Progress
-Last activity: 2026-06-30 — 02-02 complete: projection.py + corner_transfer.py + transfer_corners.py; XFER-02/03/04 PASSED (0.4% dropout, 2611 corners, corners.npz persisted)
+Phase: 3 of 5 (Scale-Independent Metrics)
+Plan: 2 of 2 in current phase (03-01 and 03-02 complete)
+Status: Phase 3 Complete — ready for Phase 4
+Last activity: 2026-06-30 — 03-01 complete: flatness.py + compute_flatness_consistency.py; MET-01 pooled=1.09mm, MET-02 size CV=0.0015; flatness_consistency.json persisted
 
-Progress: [████░░░░░░] ~30%
+Progress: [██████░░░░] ~60%
 
 ## Performance Metrics
 
@@ -41,14 +41,14 @@ Progress: [████░░░░░░] ~30%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-data-environment | 2/2 | 11 min | 5.5 min |
-| 02-corner-transfer | 2/3 | 45 min | 22.5 min |
+| 02-corner-transfer | 3/3 | 55 min | 18 min |
+| 03-scale-independent-metrics | 2/2 | 14 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 8 min, 3 min, 10 min
+- Last 5 plans: 8 min, 3 min, 10 min, 8 min, 6 min
 - Trend: baseline
 
 *Updated after each plan completion*
-| Phase 03-scale-independent-metrics P02 | 5 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -68,6 +68,9 @@ Recent decisions affecting current work:
 - [Phase 01]: Fused clouds returned as lazy Path objects only (~590 MB each); never loaded by loader
 - [Phase 03-02]: Coverage threshold default=6 corners/frame; below-threshold cameras recorded as excluded (not errors); board-blind cameras (0 rows) absent from coverage — non-event
 - [Phase 03-02]: Overall MET-03 RMS uses pooled per-corner residuals across all frames (not mean-of-frame-means) to preserve distribution shape for Phase 5
+- [Phase 03-01]: board_size_from_corners uses median adjacent-pair 3D spacing (not fitted extent) as MET-02 consistency measure; docstring flags this as variation, not absolute accuracy (MET-04 is Phase 4)
+- [Phase 03-01]: depth_m defined as centroid projection onto calib.interface_normal for cross-frame comparability; seed plane for slab crop from corner fit_board_plane (no PnP re-detection)
+- [Phase 03-01]: data/ gitignored by design; flatness_consistency.json exists on disk but not committed; only code is versioned
 
 ### Key Decisions (Phase 02)
 
@@ -98,5 +101,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-30
-Stopped at: Completed 02-02-PLAN.md: projection.py + corner_transfer.py + transfer_corners.py; XFER-02/03/04 PASSED (0.4% dropout, corners.npz persisted)
+Stopped at: Completed 03-01-PLAN.md: flatness.py + compute_flatness_consistency.py; MET-01 pooled RMS=1.09mm, MET-02 size CV=0.0015; flatness_consistency.json persisted; Phase 3 complete
 Resume file: None
