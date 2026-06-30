@@ -23,11 +23,11 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 ## Current Position
 
 Phase: 2 of 5 (Corner Transfer)
-Plan: 1 of 3 in current phase (02-01 complete)
+Plan: 2 of 3 in current phase (02-02 complete)
 Status: In Progress
-Last activity: 2026-06-30 — 02-01 complete: charuco_detect.py + detect_corners.py, XFER-01 PASSED (2611 corners, 75/96 pairs)
+Last activity: 2026-06-30 — 02-02 complete: projection.py + corner_transfer.py + transfer_corners.py; XFER-02/03/04 PASSED (0.4% dropout, 2611 corners, corners.npz persisted)
 
-Progress: [███░░░░░░░] ~20%
+Progress: [████░░░░░░] ~30%
 
 ## Performance Metrics
 
@@ -41,7 +41,7 @@ Progress: [███░░░░░░░] ~20%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-data-environment | 2/2 | 11 min | 5.5 min |
-| 02-corner-transfer | 1/3 | 10 min | 10 min |
+| 02-corner-transfer | 2/3 | 45 min | 22.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 8 min, 3 min, 10 min
@@ -72,6 +72,13 @@ Recent decisions affecting current work:
 - [Phase 02-01]: No dist_coeffs passed to detect_charuco; CharucoDetector handles subpixel refinement internally on undistorted images
 - [Phase 02-01]: Results keyed by (frame.output_idx, camera) for direct consumption by Plan 02-02
 
+### Key Decisions (Phase 02-02)
+
+- [Phase 02-02]: K_new (post-undistortion) used for projection models, NOT cam.K — corners and depth maps share the undistorted pixel grid
+- [Phase 02-02]: NaN-mask channel sampled with padding_mode='border' to propagate NaN from bilinear neighbours (corners near depth holes treated as missing)
+- [Phase 02-02]: Fused cloud loaded once per frame; passed as argument to transfer_frame_camera to avoid repeated 650 MB reloads
+- [Phase 02-02]: Primary fallback plane fit from thin-slab (12 mm) crop of fused dense cloud via SVD; HEADLINE dropout = 0.4% (10/2611 corners plane_fit, 2 unrecovered)
+
 ### Pending Todos
 
 [From .planning/todos/pending/ — ideas captured during sessions]
@@ -88,5 +95,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-30
-Stopped at: Completed 02-01-PLAN.md: analysis/charuco_detect.py + detect_corners.py implemented; XFER-01 PASSED (2611 corners, 75/96 pairs)
+Stopped at: Completed 02-02-PLAN.md: projection.py + corner_transfer.py + transfer_corners.py; XFER-02/03/04 PASSED (0.4% dropout, corners.npz persisted)
 Resume file: None
