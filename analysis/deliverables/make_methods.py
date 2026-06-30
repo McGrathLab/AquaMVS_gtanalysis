@@ -59,6 +59,9 @@ def main() -> None:
     size_cv: float = fl["variation"]["board_size_cv"]
 
     cross_cam_rms_mm: float = cc["overall"]["overall_rms_mm"]
+    _pf_rms = [f["frame_rms_mm"] for f in cc["per_frame"] if f.get("frame_rms_mm")]
+    cross_cam_pf_min: float = min(_pf_rms)
+    cross_cam_pf_max: float = max(_pf_rms)
 
     scale_err_pct: float = sa["pooled"]["scale_error_pct_mean"]
     board_size_mm: float = sa["pooled"]["board_size_mm_mean"]
@@ -125,7 +128,8 @@ geometry is spatially consistent across depth and lateral position.  Cross-camer
 agreement --- the RMS dispersion of independently transferred 3-D corner positions
 across the camera ring for co-observed board corners --- was {cross_cam_rms_mm:.2f} mm
 overall (MET-03), and was uniform across the held-out poses (per-frame RMS in the
-1.6--2.0 mm range with no dependence on board tilt, depth, or camera count).  These
+{cross_cam_pf_min:.2f}--{cross_cam_pf_max:.2f} mm range with no dependence on board
+tilt, depth, or camera count).  These
 three scale-independent measures are non-circular: they assess the internal
 consistency of the reconstruction without reference to the calibration scale anchor.
 
@@ -185,10 +189,11 @@ lateral components) is dominated by the refraction-sensitive range direction.
 
 Refractive (through-water) reconstruction is known to carry a precision penalty of
 approximately a factor of two relative to comparable in-air photogrammetry
-[@Maas2015].  The scale-independent accuracy numbers reported here --- flatness
-below 1.1 mm and cross-camera agreement below 3.5 mm without post-hoc refraction
-correction --- demonstrate that the AquaMVS pipeline achieves metric-grade geometric
-fidelity consistent with the factor of two benchmark for refractive multi-view imaging.
+[@Maas2015].  The scale-independent accuracy numbers reported here --- flatness of
+{flatness_mm:.2f} mm and cross-camera agreement of {cross_cam_rms_mm:.2f} mm without
+post-hoc refraction correction --- demonstrate that the AquaMVS pipeline achieves
+metric-grade geometric fidelity consistent with the factor of two benchmark for
+refractive multi-view imaging.
 """
 
     # ------------------------------------------------------------------

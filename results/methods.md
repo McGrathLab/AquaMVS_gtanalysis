@@ -49,7 +49,8 @@ geometry is spatially consistent across depth and lateral position.  Cross-camer
 agreement --- the RMS dispersion of independently transferred 3-D corner positions
 across the camera ring for co-observed board corners --- was 1.87 mm
 overall (MET-03), and was uniform across the held-out poses (per-frame RMS in the
-1.6--2.0 mm range with no dependence on board tilt, depth, or camera count).  These
+1.52--2.17 mm range with no dependence on board
+tilt, depth, or camera count).  These
 three scale-independent measures are non-circular: they assess the internal
 consistency of the reconstruction without reference to the calibration scale anchor.
 
@@ -109,7 +110,8 @@ lateral components) is dominated by the refraction-sensitive range direction.
 
 Refractive (through-water) reconstruction is known to carry a precision penalty of
 approximately a factor of two relative to comparable in-air photogrammetry
-[@Maas2015].  The scale-independent accuracy numbers reported here --- flatness
-below 1.1 mm and cross-camera agreement below 3.5 mm without post-hoc refraction
-correction --- demonstrate that the AquaMVS pipeline achieves metric-grade geometric
-fidelity consistent with the factor of two benchmark for refractive multi-view imaging.
+[@Maas2015].  The scale-independent accuracy numbers reported here --- flatness of
+1.09 mm and cross-camera agreement of 1.87 mm without
+post-hoc refraction correction --- demonstrate that the AquaMVS pipeline achieves
+metric-grade geometric fidelity consistent with the factor of two benchmark for
+refractive multi-view imaging.
