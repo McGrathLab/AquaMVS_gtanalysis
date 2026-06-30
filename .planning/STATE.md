@@ -22,6 +22,59 @@ See: .planning/PROJECT.md (updated 2026-06-30)
 
 ## Current Position
 
+Phase: 5 of 5 COMPLETE + post-completion refinements. Working tree CLEAN, all committed on `main`.
+Progress: [██████████] 100% (v1 done; refinements ongoing on request)
+
+### SESSION HANDOFF (2026-06-30, user on break) — read this first
+
+**Where it stands:** All 5 phases complete. The validation runs end-to-end via one command
+(`conda run -n AquaMVS python analysis/run_all.py`) and regenerates every artifact, the
+results table, 5 figures, and the methods paragraph. 26 tests pass.
+
+**CURRENT HEADLINE NUMBERS (post all refinements — these supersede any earlier values):**
+- Flatness (MET-01): **1.09 mm** pooled (scale-independent)
+- Spatial consistency (MET-02): board size mean **60.01 mm**, CV **0.0016**; tilt span 2.8–40.7°
+- Cross-camera agreement (MET-03): **1.87 mm** pooled, uniform **1.52–2.17 mm** per frame
+- Rigid inlier RMSE (MET-05): **1.07 mm**
+- Range-vs-lateral dominance (MET-06): **3.29×** (range 1.82 vs lateral 0.55 mm) — refraction signature
+- Absolute scale (MET-04): **+0.04%** (60.013 mm) — WEAKLY circular (bounds dense-stage scale bias)
+
+**Three big post-Phase-5 refinements (all done, committed):**
+1. **Non-physical plane-fit corners** (Z<0, behind interface) — root-caused + fixed at source + gated.
+2. **Scale framing sharpened** to "weakly circular / bounds dense-stage scale bias <0.1%": verified in
+   AquaCal source that the 60mm board is the SOLE calibration scale anchor (fixed object points; no
+   independent baseline), but the dense MVS is one level removed so the board-size check bounds
+   dense-stage bias (not a tautology). Independent absolute scale = the tank.
+3. **Plane-fit fallback EXCLUDED from all metrics** (direct-depth only). Investigating per-frame RMS
+   variation showed it's NOT geometric: the per-corner MEDIAN range error is flat ~1.3mm; the variation
+   came from 6 fallback corners (of 2605, mostly camera e3v83f1) contaminating cross-camera consensus.
+   Excluding them: cross-camera 3.46→1.87mm (uniform), dominance 4.41→3.29×.
+
+**Figures (5, all DissertationFigures-styled, in data/analysis_output/figures/):**
+- error_anisotropy (★ strongest — viewing-ray-frame scatter + 2σ ellipse; refraction signature)
+- range_vs_lateral (grouped bars per validation frame + pooled)
+- spatial_consistency (flatness/size vs depth/lateral/tilt)
+- boards_in_volume (3D board poses colored by flatness)
+- board_accuracy_heatmap (per-corner residual on a board face)
+- Colour convention: range=blue, lateral=gold across both range figures; anisotropy scatter=teal.
+- Titles are NEUTRAL/descriptive (interpretation belongs in the manuscript caption).
+
+**Deliverables in results/ (committed text):** table.{md,tex,csv}, methods.md, FINDINGS.md (takeaways/
+conclusions), per_camera_agreement.{md,csv}. ALL numbers are artifact-driven (no hardcodes; verified).
+
+**Code:** analysis/ — loader.py, charuco_detect.py, projection.py, corner_transfer.py, flatness.py,
+cross_camera.py, alignment.py, error_decomposition.py, the compute_*.py drivers, run_all.py, and
+analysis/deliverables/ (figure + table + methods generators). Tests in tests/ (26 pass).
+
+**Open / possible next steps (none blocking):**
+- Write the manuscript figure captions (carry the interpretive numbers, e.g. 3.29× dominance).
+- Optional: `/gsd:complete-milestone` to archive v1; or upstream figure modules into
+  DissertationFigures/figures/aquamvs/.
+- v2 deferrals: grid regularity (§4.4, GRID-01), cross-pathway RoMa-vs-LightGlue (§4.6, XPATH-01).
+- The tank analysis (separate) carries independent absolute scale; pairs with this board validation.
+
+---
+
 Phase: 5 of 5 (Manuscript Deliverables)
 Plan: 3 of 3 in current phase (05-03 complete — PHASE COMPLETE)
 Status: ALL PHASES COMPLETE — Phase 5 plan 03 complete (OUT-04 methods.md + OUT-05 run_all.py)
