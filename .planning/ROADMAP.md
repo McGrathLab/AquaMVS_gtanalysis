@@ -74,10 +74,10 @@ Plans:
   2. Reconstructed square size vs the known 60 mm is computed and labeled explicitly as a consistency check with circularity stated.
   3. The scale result is contextualized against the Maas (2015) factor-of-two refractive precision benchmark (not framed as "0.5 %").
   4. These steps run only after Phase 3's scale-independent metrics are computed and recorded.
-**Plans**: TBD (~1 plan)
+**Plans**: 1 plan
 
 Plans:
-- [ ] 04-01: Rigid alignment (ICP/Umeyama, no scale) + absolute scale consistency check with Maas benchmark context
+- [ ] 04-01-PLAN.md — Closed-form Umeyama rigid alignment (no-scale inlier RMSE, MET-05) + absolute-scale consistency check (scale factor + board size, MET-04) with circularity caveat and Maas (2015) factor-of-two framing; separate scale_alignment.json artifact preserving the Phase 3 ordering invariant
 
 ### Phase 5: Manuscript Deliverables
 **Goal**: All metrics assembled into manuscript-ready artifacts — results table, spatial-consistency figure, per-camera output, and methods paragraph — regenerable from one reproducible entrypoint.
