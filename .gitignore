@@ -219,6 +219,7 @@ __marimo__/
 
 # Dataset — large binaries, never version-controlled
 data/
+data.zip
 
 # Script outputs
 scripts/__pycache__/
