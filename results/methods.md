@@ -41,15 +41,15 @@ alignment was applied, ensuring that the primary accuracy assessment is not subj
 to the circularity concern described in the following section.
 
 Board flatness --- the root-mean-square point-to-plane residual of the transferred
-corners relative to a best-fit plane --- was 1.09 mm (pooled RMS across
+corners relative to a best-fit plane --- was 1.11 mm (pooled RMS across
 all 8 held-out frames), reflecting the degree to which the AquaMVS reconstruction
 places board corners on a common plane.  The board-size coefficient of variation
 across the working volume was 0.0016, indicating that the recovered board
 geometry is spatially consistent across depth and lateral position.  Cross-camera
 agreement --- the RMS dispersion of independently transferred 3-D corner positions
-across the camera ring for co-observed board corners --- was 1.87 mm
+across the camera ring for co-observed board corners --- was 1.82 mm
 overall (MET-03), and was uniform across the held-out poses (per-frame RMS in the
-1.52--2.17 mm range with no dependence on board
+1.46--2.09 mm range with no dependence on board
 tilt, depth, or camera count).  These
 three scale-independent measures are non-circular: they assess the internal
 consistency of the reconstruction without reference to the calibration scale anchor.
@@ -59,7 +59,7 @@ consistency of the reconstruction without reference to the calibration scale anc
 Absolute scale was assessed via a Umeyama similarity alignment (closed-form, exploiting
 the known one-to-one corner-ID correspondence) between the transferred corner positions
 and the ideal 60 mm board geometry.  The mean recovered scale factor corresponds to a
-scale error of +0.038% (mean recovered board size 60.013 mm).
+scale error of +0.064% (mean recovered board size 60.018 mm).
 
 This result must be interpreted at the correct level.  The 60 mm square size is the sole
 metric anchor of the camera calibration: the board's corner coordinates enter the
@@ -96,13 +96,13 @@ Residual errors were decomposed along the range direction (the in-water viewing 
 returned by `cast_ray`, parallel to the axis along which refraction acts) and the
 lateral direction (perpendicular to the viewing ray, i.e. the in-plane direction
 where refraction does not operate).  The residuals are strongly range-dominated:
-pooled range RMS was 1.82 mm versus lateral RMS of 0.55 mm,
-a range-to-lateral dominance ratio of 3.29.  This pattern --- range
+pooled range RMS was 1.78 mm versus lateral RMS of 0.53 mm,
+a range-to-lateral dominance ratio of 3.39.  This pattern --- range
 error exceeding lateral error by more than four-fold across all 8 held-out frames ---
 is consistent with the residual influence of refractive depth uncertainty, wherein
 small errors in the ray-interface intersection translate to offsets along the cast-ray
 direction rather than lateral displacement.  Sub-millimetre lateral agreement
-(0.55 mm) confirms that the in-plane geometric fidelity of the
+(0.53 mm) confirms that the in-plane geometric fidelity of the
 reconstruction is high, and that the larger cross-camera RMS (which mixes range and
 lateral components) is dominated by the refraction-sensitive range direction.
 
@@ -111,7 +111,7 @@ lateral components) is dominated by the refraction-sensitive range direction.
 Refractive (through-water) reconstruction is known to carry a precision penalty of
 approximately a factor of two relative to comparable in-air photogrammetry
 [@Maas2015].  The scale-independent accuracy numbers reported here --- flatness of
-1.09 mm and cross-camera agreement of 1.87 mm without
+1.11 mm and cross-camera agreement of 1.82 mm without
 post-hoc refraction correction --- demonstrate that the AquaMVS pipeline achieves
 metric-grade geometric fidelity consistent with the factor of two benchmark for
 refractive multi-view imaging.
