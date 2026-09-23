@@ -43,6 +43,8 @@ from typing import Optional
 # Allow running from the repo root without installing the package
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from analysis._paths import analysis_output_root  # noqa: E402
+
 import numpy as np
 import open3d as o3d
 
@@ -506,12 +508,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--corners",
-        default="data/analysis_output/corner_transfer/corners.npz",
+        default=str(analysis_output_root() / "corner_transfer/corners.npz"),
         help="Path to Phase-2 corners.npz (default: data/analysis_output/corner_transfer/corners.npz)",
     )
     parser.add_argument(
         "--out-dir",
-        default="data/analysis_output/scale_independent_metrics",
+        default=str(analysis_output_root() / "scale_independent_metrics"),
         help="Output directory (default: data/analysis_output/scale_independent_metrics)",
     )
     parser.add_argument(

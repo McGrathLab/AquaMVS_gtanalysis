@@ -39,6 +39,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from analysis._paths import analysis_output_root  # noqa: E402
+
 import numpy as np
 
 from analysis.cross_camera import (
@@ -281,12 +283,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--corners",
-        default="data/analysis_output/corner_transfer/corners.npz",
+        default=str(analysis_output_root() / "corner_transfer/corners.npz"),
         help="Path to corners.npz (default: data/analysis_output/corner_transfer/corners.npz)",
     )
     parser.add_argument(
         "--out-dir",
-        default="data/analysis_output/scale_independent_metrics",
+        default=str(analysis_output_root() / "scale_independent_metrics"),
         help="Output directory for JSON artifacts (default: data/analysis_output/scale_independent_metrics)",
     )
     parser.add_argument(

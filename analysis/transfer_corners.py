@@ -32,6 +32,8 @@ from typing import Optional
 # Allow running from the repo root without installing the package
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from analysis._paths import analysis_output_root  # noqa: E402
+
 import numpy as np
 import open3d as o3d
 
@@ -301,7 +303,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--out-dir",
-        default="data/analysis_output/corner_transfer",
+        default=str(analysis_output_root() / "corner_transfer"),
         help="Output directory for corners and dropout report (default: data/analysis_output/corner_transfer)",
     )
     parser.add_argument(

@@ -16,9 +16,13 @@ import json
 import sys
 from pathlib import Path
 
+# Follow AQUAMVS_GT_OUT so each output root can be checked independently.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from analysis._paths import analysis_output_root  # noqa: E402
 
-DEFAULT_ARTIFACT = Path(
-    "data/analysis_output/scale_independent_metrics/cross_camera_agreement.json"
+
+DEFAULT_ARTIFACT = (
+    analysis_output_root() / "scale_independent_metrics" / "cross_camera_agreement.json"
 )
 
 
