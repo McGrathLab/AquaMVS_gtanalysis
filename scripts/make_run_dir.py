@@ -3,7 +3,7 @@
 The shipped configs use relative, Windows-style paths (``frames\\e3v82f9``). This
 writes a run directory whose config.yaml points at absolute paths inside it, so
 ``aquamvs run config.yaml`` works from anywhere, and changes nothing else in the
-config except, optionally, the matcher:
+config except, optionally, the matcher, the pipeline mode and the last frame:
 
   <run dir>/config.yaml        source config; calibration_path, output_dir, mask_dir
                                and every camera_input_map entry rewritten
@@ -17,7 +17,8 @@ dataset's config; fish-present runs from the paper's 021826 config).
 Usage:
     python scripts/make_run_dir.py <run dir> --config <source config.yaml> \
         --calibration <calibration.json> --frames <frames dir> \
-        [--masks <masks dir>] [--matcher roma|lightglue]
+        [--masks <masks dir>] [--matcher roma|lightglue] [--pipeline-mode full|sparse]
+        [--frame-stop N]
 """
 
 from __future__ import annotations
@@ -37,6 +38,8 @@ def make_run_dir(
     frames: Path,
     masks: Path | None = None,
     matcher: str | None = None,
+    pipeline_mode: str | None = None,
+    frame_stop: int | None = None,
 ) -> Path:
     run_dir = run_dir.resolve()
     run_dir.mkdir(parents=True, exist_ok=True)
@@ -48,6 +51,10 @@ def make_run_dir(
     cfg["mask_dir"] = str(run_dir / "masks")
     if matcher is not None:
         cfg["matcher_type"] = matcher
+    if pipeline_mode is not None:
+        cfg["pipeline_mode"] = pipeline_mode
+    if frame_stop is not None:
+        cfg["preprocessing"]["frame_stop"] = frame_stop
 
     missing = [cam for cam in cfg["camera_input_map"] if not (frames / cam).is_dir()]
     if missing:
@@ -77,9 +84,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--masks", type=Path, default=None, help="mask directory to link, if any")
     ap.add_argument("--matcher", choices=["roma", "lightglue"], default=None,
                     help="override matcher_type (default: keep the source config's)")
+    ap.add_argument("--pipeline-mode", choices=["full", "sparse"], default=None,
+                    help="override pipeline_mode (default: keep the source config's)")
+    ap.add_argument("--frame-stop", type=int, default=None,
+                    help="override preprocessing.frame_stop, e.g. 1 for the first frame only")
     args = ap.parse_args(argv)
 
-    out = make_run_dir(args.run_dir, args.config, args.calibration, args.frames, args.masks, args.matcher)
+    out = make_run_dir(args.run_dir, args.config, args.calibration, args.frames, args.masks,
+                       args.matcher, args.pipeline_mode, args.frame_stop)
     print(f"wrote {out}\n  then: cd {out.parent} && aquamvs run config.yaml")
     return 0
 

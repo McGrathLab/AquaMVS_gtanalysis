@@ -1,12 +1,15 @@
 # AquaMVS_gtanalysis
 
-Post-hoc ground-truth analysis for the AquaMVS reconstruction library via ChArUco board calibration targets.
+**This repository reproduces every figure and number in the AquaMVS paper.**
 
-This repository holds the analysis code that validates the geometric accuracy of the
+Its core is the ground-truth analysis that validates the geometric accuracy of the
 AquaMVS underwater multi-view stereo (MVS) pipeline against independent ChArUco
 calibration-board ground truth. The validation is non-circular: ground-truth corner
 geometry is recovered from the calibration boards independently of the MVS reconstruction
-it is used to assess.
+it is used to assess. It also holds the fish-present analyses (temporal repeatability, the
+temporal median, the RoMa vs LightGlue comparison) and the generators for all manuscript
+figures, so it draws on two datasets: the ground-truth board dataset and the fish-present
+example dataset.
 
 ## Software versions
 
@@ -48,6 +51,17 @@ and no `fused-local-corr`. `pip check` reports those two unmet requirements; tha
 expected.
 Reconstruction needs a CUDA GPU. Every run here used a 12 GB card, one run at a time.
 Metric computation runs on the CPU.
+
+**Figures** (section 3) need three system packages besides the Python environment: LaTeX
+with Type 1 Computer Modern, so figure text matches the manuscript; Graphviz, for Fig. 1;
+and the CMU Serif font. On Debian or Ubuntu:
+
+```bash
+sudo apt install texlive-latex-extra texlive-fonts-recommended cm-super dvipng graphviz fonts-cmu
+```
+
+The 3D mesh renders (Figs. 2 and 3) use Open3D's offscreen renderer, which needs a GPU with
+EGL on Linux (it works without a display) or a desktop session.
 
 ## 1. Recompute the metrics from the archived reconstruction
 
@@ -179,38 +193,71 @@ To run the interface-sensitivity check, also analyze the February 2026 reconstru
 shipped in the archive (`--data-root data/aquamvs_ground_truth_analysis`). Pass its output
 root as a further `--root`, then add `--pair <that name> refractive`.
 
-### 2e. Fish-present sequence (R1.5, R2.3)
+### 2e. Fish-present sequence (R1.5, R2.2, R2.3)
 
 These runs use session 021826 from the AquaMVS example dataset
 ([10.5281/zenodo.18702024](https://doi.org/10.5281/zenodo.18702024)): its temporal-median
-frames `images/filtered/` (frames 1799 to 8999, 5 frames) and `masks/`. The reconstruction
-config is the paper's 021826 config, which differs from the example dataset's `config.yaml`:
-it uses `voxel_size` 0.0005 and `poisson_depth` 10.
+frames `images/filtered/` (frames 1799 to 8999, 5 frames), `masks/`, and the raw frame 1799.
+The reconstruction config is the paper's 021826 config, which differs from the example
+dataset's tutorial `config.yaml`: it uses `voxel_size` 0.0005 and `poisson_depth` 10.
+Each run below is identical to the published benchmark run for its arm apart from paths.
 
-<!-- TODO(release): the paper's 021826 config is not yet in any public archive; point at
-     it here once the example dataset's new version ships it. -->
+<!-- TODO(release): point at the paper's 021826 config and the raw frame-1799 images once
+     the example dataset's new version (which will carry both) is published. -->
 
 ```bash
 EX=/path/to/aquamvs-example-dataset
-python scripts/make_run_dir.py runs_fish/modern_run5_filtered --config config_021826.yaml \
-    --calibration $REFR --frames $EX/images/filtered --masks $EX/masks
-(cd runs_fish/modern_run5_filtered && aquamvs run config.yaml)
+CFG=$EX/config_paper.yaml          # the paper's 021826 config
+RAW=/path/to/raw_frame_1799        # one subdirectory per camera, frame_001799.png
 
-# R2.3: coverage, repeatability and the large-error tail over the four consecutive pairs
-python scripts/temporal_coverage.py runs_fish/modern_run5_filtered --json runs_fish/modern_run5_filtered/temporal_coverage.json
+# RoMa, the five median frames (R2.3; RoMa arm of Fig. 2 and of the point-count comparison)
+python scripts/make_run_dir.py data/runs_fish/modern_run5_filtered --config $CFG \
+    --calibration $REFR --frames $EX/images/filtered --masks $EX/masks
+# RoMa, the raw frame 1799 (R1.5)
+python scripts/make_run_dir.py data/runs_fish/modern_run3_raw --config $CFG \
+    --calibration $REFR --frames $RAW --masks $EX/masks
+# LightGlue on median frame 1799: full pathway, and sparse mode (R2.2 point counts, Fig. 2)
+python scripts/make_run_dir.py data/runs_fish/modern_lg_full --config $CFG --calibration $REFR \
+    --frames $EX/images/filtered --masks $EX/masks --matcher lightglue --frame-stop 1
+python scripts/make_run_dir.py data/runs_fish/modern_lg_sparse --config $CFG --calibration $REFR \
+    --frames $EX/images/filtered --masks $EX/masks --matcher lightglue --pipeline-mode sparse --frame-stop 1
+
+for r in modern_run5_filtered modern_run3_raw modern_lg_full modern_lg_sparse; do
+    (cd data/runs_fish/$r && aquamvs run config.yaml)
+done
 ```
 
-The temporal-median frames are trailing 1800-frame (60 s) medians of the raw video. R1.5
-compares the median frame 1799 against the raw frame 1799, reconstructed the same way:
+Readouts:
 
 ```bash
+# R2.3: coverage, repeatability, the large-error tail and the signed drift, four consecutive pairs
+python scripts/temporal_coverage.py data/runs_fish/modern_run5_filtered \
+    --json data/runs_fish/modern_run5_filtered/temporal_coverage.json
+
+# R1.5: the temporal median on vs off, frame 1799
 python scripts/median_comparison.py \
-    runs_fish/modern_run5_filtered/output/frame_000000/point_cloud/fused.ply \
-    runs_fish/modern_run3_raw/output/frame_000000/point_cloud/fused.ply
+    data/runs_fish/modern_run5_filtered/output/frame_000000/point_cloud/fused.ply \
+    data/runs_fish/modern_run3_raw/output/frame_000000/point_cloud/fused.ply
 ```
 
-<!-- TODO(release): the raw frame-1799 images come from the session's raw video, which is
-     not in a public archive yet. -->
+The fused point counts of the RoMa, LightGlue-full and LightGlue-sparse arms are in each run's
+`output/frame_000000/point_cloud/` (`fused.ply`, or `sparse.ply` in sparse mode).
+The temporal-median frames are trailing 1800-frame (60 s) medians of the raw video.
+
+## 3. Figures
+
+Every manuscript figure, under its manuscript filename, with a `MANIFEST.md` mapping each
+figure to its generator and inputs:
+
+```bash
+python analysis/make_figures.py                   # -> results/figures/
+python analysis/make_figures.py --only fig3 figS1 # a subset
+```
+
+This reads the runs and analysis outputs from sections 2b to 2e, and takes about a minute
+on a GPU machine. Figure text is LaTeX Computer Modern; without LaTeX the command stops,
+rather than silently switch to another font (`--allow-font-fallback` for a draft). The
+individual generators are in `analysis/deliverables/fig_*.py`, each runnable on its own.
 
 ## Other tools
 
