@@ -25,6 +25,8 @@ For each consecutive frame pair it reports:
   - how many common cells are actually used (ROI / valid-both)
   - missing values: NaN cells are excluded, never interpolated
   - repeatability: fraction of ROI cells with |dz| <= 0.5 mm and <= 1.0 mm
+  - signed drift: mean, SD, SE and median of dz = later - earlier over the ROI
+    (|dz| cannot show a monotone trend)
   - the large-error tail: count and fraction of valid-both cells with
     |dz| > 10 mm, split into inside/outside the ROI, and their radial position
   - median and p95 |dz| outside the ROI
@@ -127,6 +129,17 @@ def _sand_gate(z: np.ndarray, crop: np.ndarray) -> np.ndarray:
     return crop & np.isfinite(z) & (np.abs(z - mu) <= 3 * sd)
 
 
+def _block_se(d: np.ndarray, roi: np.ndarray, n: int = 4) -> float:
+    """SE of the ROI mean from the spread of n x n block means over the ROI's bounding box."""
+    ys, xs = np.nonzero(roi)
+    yb = np.linspace(ys.min(), ys.max() + 1, n + 1).astype(int)
+    xb = np.linspace(xs.min(), xs.max() + 1, n + 1).astype(int)
+    means = [d[y0:y1, x0:x1][roi[y0:y1, x0:x1]].mean()
+             for y0, y1 in zip(yb, yb[1:]) for x0, x1 in zip(xb, xb[1:])
+             if roi[y0:y1, x0:x1].any()]
+    return float(np.std(means, ddof=1) / np.sqrt(len(means)))
+
+
 def readout(run: Path, source: str = "cloud", method: str = "bin") -> dict:
     res = _grid_resolution(run)
     frames = _load_points(run, source)
@@ -161,6 +174,7 @@ def readout(run: Path, source: str = "cloud", method: str = "bin") -> dict:
             roi = paper_roi & both
         else:
             roi = _sand_gate(za, crop) & _sand_gate(zb, crop)
+        signed = (zb - za)[roi] * 1000  # mm, later minus earlier, as the paper's Fig. S1
         dz = np.abs(za - zb) * 1000  # mm
         tail = both & (dz > TAIL_MM)
         outside = both & ~roi
@@ -177,6 +191,13 @@ def readout(run: Path, source: str = "cloud", method: str = "bin") -> dict:
             "roi_within_0p5mm": float((dz[roi] <= 0.5).mean()),
             "roi_within_1p0mm": float((dz[roi] <= 1.0).mean()),
             "roi_median_abs_dz_mm": float(np.median(dz[roi])),
+            "roi_mean_signed_dz_mm": float(signed.mean()),
+            "roi_sd_signed_dz_mm": float(signed.std(ddof=1)),
+            "roi_se_signed_dz_mm": float(signed.std(ddof=1) / np.sqrt(signed.size)),
+            "roi_median_signed_dz_mm": float(np.median(signed)),
+            # Cells are spatially correlated, so the per-cell SE above overstates precision.
+            # Block SE: mean signed dz in each of a 4 x 4 grid of ROI blocks, SD / sqrt(16).
+            "roi_block_se_signed_dz_mm": _block_se((zb - za) * 1000, roi),
             "tail_cells": int(tail.sum()),
             "tail_fraction_of_valid_both": float(tail.sum() / both.sum()),
             "tail_cells_in_roi": int((tail & roi).sum()),
