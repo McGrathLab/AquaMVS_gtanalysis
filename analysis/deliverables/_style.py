@@ -208,7 +208,7 @@ def save_figure(
     paths: list[Path] = []
     for fmt in formats:
         p = dest / f"{name}.{fmt}"
-        fig.savefig(p, format=fmt, bbox_extra_artists=extra_artists or [],
+        fig.savefig(p, format=fmt, bbox_extra_artists=extra_artists,
                     **savefig_kwargs)
         paths.append(p)
     return paths

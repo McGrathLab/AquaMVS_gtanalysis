@@ -159,7 +159,7 @@ def run_deliverables() -> None:
     from analysis.deliverables.make_table import main as make_table
     from analysis.deliverables.make_per_camera import main as make_per_camera
     from analysis.deliverables.make_methods import main as make_methods
-    from analysis.deliverables.fig_spatial_consistency import main as fig_spatial
+    from analysis.deliverables.fig_spatial_consistency import render as fig_spatial
     from analysis.deliverables.fig_range_lateral import main as fig_range
     from analysis.deliverables.fig_anisotropy import main as fig_anisotropy
     from analysis.deliverables.fig_boards_volume import main as fig_boards_volume
@@ -179,7 +179,8 @@ def run_deliverables() -> None:
     make_methods()
 
     print("\n--- fig_spatial_consistency ---")
-    fig_spatial()
+    for p in fig_spatial():
+        print(f"Saved: {p}")
 
     print("\n--- fig_range_lateral ---")
     fig_range()
