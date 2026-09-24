@@ -154,8 +154,8 @@ def draw_triad(ax, cam: Camera, origin: np.ndarray, length_m: float,
             continue
         tip = cam.project(np.asarray(origin) + length_m * axis)[0]
         ax.annotate("", xy=tip, xytext=o,
-                    arrowprops=dict(arrowstyle="-|>", color=col, lw=1.4, mutation_scale=9,
-                                    path_effects=halo))
+                    arrowprops=dict(arrowstyle="-|>", color=col, lw=1.2, mutation_scale=6,
+                                    shrinkA=0, shrinkB=0, path_effects=halo))
         d = (tip - o) / np.linalg.norm(tip - o)
         ax.text(*(tip + 0.018 * cam.width * d), lab, ha="center", va="center",
                 fontsize=fontsize, color=col, path_effects=halo)
