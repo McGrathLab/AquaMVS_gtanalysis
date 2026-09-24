@@ -1,0 +1,32 @@
+# Pinned environment for the analysis and every reconstruction behind results/.
+# Python 3.12. Install in this order (CUDA 12.1 build of PyTorch used):
+#
+#   pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121
+#   pip install --no-deps -r requirements-romav2.txt
+#   pip install -r requirements.txt
+#
+# RoMa v2 lives in its own file because it must be installed --no-deps (see there).
+# Both git prerequisites are exactly AquaMVS v1.7.2's requirements-prereqs.txt pins.
+
+# AquaMVS prerequisites
+lightglue @ git+https://github.com/cvg/LightGlue.git@edb2b838efb2ecfe3f88097c5fad9887d95aedad
+# RoMa v2's runtime dependencies (it is installed --no-deps)
+einops==0.8.2
+rich==15.0.0
+pillow==12.2.0
+
+# AquaMVS and AquaCal. PyPI stops at aquamvs 1.7.1 (same source as 1.7.2), so the tag is pinned.
+aquamvs @ git+https://github.com/McGrathLab/AquaMVS.git@v1.7.2
+aquacal==2.1.0
+
+# Libraries this repository imports directly, at the versions used
+numpy==2.4.4
+scipy==1.17.1
+opencv-python==4.13.0.92
+open3d==0.19.0
+matplotlib==3.10.9
+PyYAML==6.0.3
+kornia==0.8.3
+
+# Tests
+pytest==9.1.1

@@ -1,0 +1,12 @@
+# RoMa v2, installed WITHOUT its declared dependencies:
+#
+#   pip install --no-deps -r requirements-romav2.txt
+#
+# RoMa v2 declares torchvision>=0.23.0 and fused-local-corr. Resolving those upgrades
+# torch past the 2.5.1 stack every result here was produced with, so the environment
+# behind the results had romav2 installed --no-deps: torchvision 0.20.1, no
+# fused-local-corr. Its remaining runtime dependencies are pinned in requirements.txt.
+#
+# Commit = AquaMVS v1.7.2's requirements-prereqs.txt pin: RoMa v2.0.1 plus a one-line
+# GPU-memory fix (weights bit-identical; upstream PR https://github.com/Parskatt/RoMaV2/pull/50).
+romav2 @ git+https://github.com/tlancaster6/RoMaV2.git@29ee4277d075e2ba7b309615343c709b314867bb
