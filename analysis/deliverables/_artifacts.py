@@ -2,7 +2,7 @@
 Read-only loaders for the 5 persisted analysis artifacts.
 
 All paths are anchored to the repository root (this file's parent.parent.parent)
-so scripts run correctly from any working directory via `conda run`.
+so scripts run correctly from any working directory.
 
 These functions read ONLY the small JSON files.
 They do NOT import or load corners.npz or fused point clouds.

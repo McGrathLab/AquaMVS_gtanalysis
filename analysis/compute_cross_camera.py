@@ -20,8 +20,8 @@ Outputs
 
 Run
 ---
-    conda run -n AquaMVS python analysis/compute_cross_camera.py
-    conda run -n AquaMVS python analysis/compute_cross_camera.py \\
+    python analysis/compute_cross_camera.py
+    python analysis/compute_cross_camera.py \\
         --corners data/analysis_output/corner_transfer/corners.npz \\
         --out-dir data/analysis_output/scale_independent_metrics \\
         --min-corners 6 --min-cameras 2

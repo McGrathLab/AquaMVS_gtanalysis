@@ -14,12 +14,12 @@ Deliverable generators (always run after metric stages):
   make_table, make_per_camera, make_methods, fig_spatial_consistency, fig_range_lateral
 
 Run:
-    conda run -n AquaMVS python analysis/run_all.py
-    conda run -n AquaMVS python analysis/run_all.py --data-root data/aquamvs_ground_truth_analysis
-    conda run -n AquaMVS python analysis/run_all.py --skip-metrics  # regenerate deliverables only
+    python analysis/run_all.py
+    python analysis/run_all.py --data-root data/aquamvs_ground_truth_analysis
+    python analysis/run_all.py --skip-metrics  # regenerate deliverables only
 
     # Analyze an alternative reconstruction without touching the baseline artifacts:
-    conda run -n AquaMVS python analysis/run_all.py --data-root <alt dataset root> \
+    python analysis/run_all.py --data-root <alt dataset root> \
         --output-root data/analysis_output.pinhole --results-dir results.pinhole
 
 The script is deterministic and safe to re-run: each stage overwrites its artifacts

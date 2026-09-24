@@ -15,8 +15,8 @@ Outputs:
   <out-dir>/dropout_report.json   — per-(frame,camera) + headline dropout rate
 
 Run:
-    conda run -n AquaMVS python analysis/transfer_corners.py
-    conda run -n AquaMVS python analysis/transfer_corners.py --data-root /path --out-dir /path/out
+    python analysis/transfer_corners.py
+    python analysis/transfer_corners.py --data-root /path --out-dir /path/out
 """
 
 from __future__ import annotations

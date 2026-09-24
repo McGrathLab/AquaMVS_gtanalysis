@@ -28,8 +28,8 @@ precision penalty. The "0.5 % of dimension" misread is banned and appears nowher
 
 Run
 ---
-    conda run -n AquaMVS python analysis/compute_scale_alignment.py
-    conda run -n AquaMVS python analysis/compute_scale_alignment.py \\
+    python analysis/compute_scale_alignment.py
+    python analysis/compute_scale_alignment.py \\
         --corners data/analysis_output/corner_transfer/corners.npz \\
         --data-root data/aquamvs_ground_truth_analysis \\
         --out data/analysis_output/scale_alignment.json

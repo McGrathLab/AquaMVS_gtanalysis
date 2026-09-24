@@ -14,7 +14,7 @@ in the RAW MVS frame. Writes data/analysis_output/error_decomposition.json.
 
 Usage
 -----
-    conda run -n AquaMVS python analysis/compute_error_decomposition.py \
+    python analysis/compute_error_decomposition.py \
         --corners data/analysis_output/corner_transfer/corners.npz \
         --data-root data/aquamvs_ground_truth_analysis \
         --out data/analysis_output

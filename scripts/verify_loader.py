@@ -1,7 +1,7 @@
 """
 Verification script for analysis/loader.py.
 Run from the repo root:
-    conda run -n AquaMVS python scripts/verify_loader.py
+    python scripts/verify_loader.py
 """
 
 import sys

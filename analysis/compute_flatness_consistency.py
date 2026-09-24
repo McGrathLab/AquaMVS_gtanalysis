@@ -22,8 +22,8 @@ Outputs (under --out-dir):
   flatness_consistency_schema.json  — field descriptions sidecar
 
 Run:
-    conda run -n AquaMVS python analysis/compute_flatness_consistency.py
-    conda run -n AquaMVS python analysis/compute_flatness_consistency.py \\
+    python analysis/compute_flatness_consistency.py
+    python analysis/compute_flatness_consistency.py \\
         --data-root data/aquamvs_ground_truth_analysis \\
         --corners data/analysis_output/corner_transfer/corners.npz \\
         --out-dir data/analysis_output/scale_independent_metrics
