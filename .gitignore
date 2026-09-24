@@ -224,3 +224,6 @@ data.zip
 # Script outputs
 scripts/__pycache__/
 analysis/__pycache__/
+
+# Rendered manuscript figures: regenerate with analysis/make_figures.py
+results/figures/
