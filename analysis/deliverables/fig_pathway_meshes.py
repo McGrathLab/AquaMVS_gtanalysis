@@ -8,8 +8,10 @@ LaTeX). Both are rendered with ONE camera -- AquaMVS's canonical "oblique" viewp
 bounding box -- and the same crop, so the panels are directly comparable.
 
 Scale and coordinates (R2.5): a perspective oblique view has no single valid scale bar,
-so each panel carries a world-axis triad with 20 cm arms, anchored on the sand floor
-near the front of the view; its arms are the scale reference along each axis.
+so each panel carries a world-axis triad with 20 cm arms in its lower-left corner. The
+triad shows the world axes' directions (it is not at the world origin, which is at the
+reference camera); it is placed at the viewing depth of the sand floor near the front of
+the view, so its arms are drawn at the scale of that part of the scene.
 
 Run:
     python -m analysis.deliverables.fig_pathway_meshes \\
@@ -55,14 +57,15 @@ def main() -> None:
     r0, c0 = boxes[:, [0, 2]].min(0)
     r1, c1 = boxes[:, [1, 3]].max(0)
 
-    # triad on the sand floor near the front of the view: among RoMa vertices on the
-    # floor (Z within 5 cm of its 95th percentile; Z points down) and inside 60 % of the
-    # tank radius (off the wall), the mean of the 2000 closest to the camera
+    # scale reference: the sand floor near the front of the view -- among RoMa vertices on
+    # the floor (Z within 5 cm of its 95th percentile; Z points down) and inside 60 % of
+    # the tank radius (off the wall), the mean of the 2000 closest to the camera
     v = np.asarray(meshes[0].vertices)
     centre_xy = np.median(v[:, :2], axis=0)
     r = np.linalg.norm(v[:, :2] - centre_xy, axis=1)
     floor = v[(v[:, 2] > np.percentile(v[:, 2], 95) - 0.05) & (r < 0.6 * np.percentile(r, 99))]
-    origin = floor[np.argsort(np.linalg.norm(floor - cam.eye, axis=1))[:2000]].mean(0)
+    floor_front = floor[np.argsort(np.linalg.norm(floor - cam.eye, axis=1))[:2000]].mean(0)
+    origin = cam.unproject((c0 + 0.13 * (c1 - c0), r0 + 0.86 * (r1 - r0)), floor_front)
 
     width_in = DOUBLE_COL / 2
     for img, name in zip(imgs, args.names):

@@ -121,16 +121,21 @@ def camera_looking(center: np.ndarray, direction: np.ndarray, up: np.ndarray,
 
 
 def draw_scale_bar(ax, cam: Camera, at: np.ndarray, length_mm: float,
-                   xy_frac=(0.06, 0.06), color="black") -> None:
-    """Horizontal scale bar in image space, valid at the depth of world point *at*."""
+                   xy_frac=(0.06, 0.06)) -> None:
+    """Horizontal scale bar, valid at the depth of world point *at*, in the axes' lower left.
+
+    Black with a white halo, so it reads on the white background and on the scene alike.
+    """
+    halo = [pe.withStroke(linewidth=3.5, foreground="white")]
     px = length_mm / cam.mm_per_px_at(at)
-    x0 = ax.get_xlim()[0] + xy_frac[0] * abs(ax.get_xlim()[1] - ax.get_xlim()[0])
-    ybot = max(ax.get_ylim())
-    y0 = ybot - xy_frac[1] * abs(ax.get_ylim()[1] - ax.get_ylim()[0])
-    ax.plot([x0, x0 + px], [y0, y0], color=color, linewidth=2.0, solid_capstyle="butt")
+    xl, yl = ax.get_xlim(), ax.get_ylim()
+    x0 = min(xl) + xy_frac[0] * abs(xl[1] - xl[0])
+    y0 = max(yl) - xy_frac[1] * abs(yl[1] - yl[0])
+    ax.plot([x0, x0 + px], [y0, y0], color="black", linewidth=2.0, solid_capstyle="butt",
+            path_effects=halo)
     label = f"{length_mm / 10:g} cm" if length_mm >= 10 else f"{length_mm:g} mm"
-    ax.text(x0 + px / 2, y0 - 0.012 * abs(ax.get_ylim()[1] - ax.get_ylim()[0]), label,
-            ha="center", va="bottom", fontsize=7, color=color)
+    ax.text(x0 + px / 2, y0 - 0.015 * abs(yl[1] - yl[0]), label, ha="center", va="bottom",
+            fontsize=7, color="black", path_effects=[pe.withStroke(linewidth=2.2, foreground="white")])
 
 
 def draw_triad(ax, cam: Camera, origin: np.ndarray, length_m: float,
