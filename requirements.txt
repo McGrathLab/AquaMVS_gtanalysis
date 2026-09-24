@@ -28,5 +28,8 @@ matplotlib==3.10.9
 PyYAML==6.0.3
 kornia==0.8.3
 
+# Figure 1 (flowchart): also needs the Graphviz `dot` binary and the CMU Serif font
+graphviz==0.21
+
 # Tests
 pytest==9.1.1
