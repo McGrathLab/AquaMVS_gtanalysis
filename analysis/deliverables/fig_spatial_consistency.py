@@ -91,7 +91,7 @@ def render(root: Path | None = None, pinhole: Path | None = None,
                 ax.scatter(xdata[ph["idx"]], ph["flatness_mm"], marker="s", s=34, zorder=4,
                            facecolors="none", edgecolors=COLORS["coral"], linewidths=1.1,
                            label="Pinhole (re-fitted)")
-            ax.axhline(pooled_flatness, color=COLORS["coral"], linewidth=1.2,
+            ax.axhline(pooled_flatness, color=COLORS["dark gray"], linewidth=1.2,
                        linestyle="--", label=f"Refractive pooled RMS {pooled_flatness:.2f} mm")
             ax.set_xlabel(xlabel)
             if col == 0:

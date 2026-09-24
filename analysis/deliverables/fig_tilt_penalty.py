@@ -1,7 +1,7 @@
 """
 Pinhole penalty vs board tilt (R2.1).
 
-Per-frame absolute scale error and rigid inlier RMSE against board tilt, for the
+Per-frame scale error and rigid inlier RMSE against board tilt, for the
 refractive reconstruction and the re-fitted pinhole ablation (pinhole B). The
 model-swap ablation (pinhole A: refractive parameters, n_water = 1) is a strawman and
 is deliberately left out of figures; it appears only in the comparison table.
@@ -48,10 +48,11 @@ def render(refractive: Path, pinhole: Path, out: Path, name: str) -> list[Path]:
         for label, frames, color, marker in arms:
             for ax, key in ((ax_s, "scale_error_pct"), (ax_r, "rigid_rms_mm")):
                 x, y = _series(frames, tilt_of, key)
-                ax.plot(x, y, color=color, marker=marker, linewidth=0.8,
-                        markersize=4.5, label=label)
+                # markers only: eight discrete poses, not a sampled curve
+                ax.plot(x, y, color=color, marker=marker, linestyle="none",
+                        markersize=5, label=label)
         ax_s.axhline(0, color="#AAAAAA", linewidth=0.6, linestyle=":", zorder=0)
-        ax_s.set_ylabel("Absolute scale error (\\%)")
+        ax_s.set_ylabel("Scale error (\\%)")
         ax_r.set_ylabel("Rigid inlier RMSE (mm)")
         ax_r.set_ylim(bottom=0)
         for ax, tag in ((ax_s, "(A)"), (ax_r, "(B)")):
