@@ -63,3 +63,20 @@ def load_error_decomp(root: Path | str | None = None) -> dict:
 def load_dropout(root: Path | str | None = None) -> dict:
     """Load corner_transfer/dropout_report.json from *root*."""
     return _load_json(_root(root) / "corner_transfer" / "dropout_report.json")
+
+
+def load_per_frame(root: Path | str | None = None) -> dict[int, dict[str, float]]:
+    """frame_idx -> {tilt_deg, flatness_rms_mm, board_size_mm, scale_error_pct, rigid_rms_mm}.
+
+    Joins the per-frame records of flatness_consistency.json and scale_alignment.json.
+    """
+    out: dict[int, dict[str, float]] = {}
+    for f in load_flatness(root)["per_frame"]:
+        out[f["frame_idx"]] = {"tilt_deg": f["tilt_deg"], "flatness_rms_mm": f["flatness_rms_mm"]}
+    for f in load_scale_alignment(root)["per_frame"]:
+        out.setdefault(f["frame_idx"], {}).update(
+            board_size_mm=f["board_size_mm"],
+            scale_error_pct=f["scale_error_pct"],
+            rigid_rms_mm=f["rigid_rms_mm"],
+        )
+    return dict(sorted(out.items()))

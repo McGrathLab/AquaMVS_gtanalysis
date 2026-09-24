@@ -22,10 +22,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 from scipy import stats
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from analysis.deliverables._artifacts import load_per_frame  # noqa: E402
 
 METRICS = {
     "flatness_rms_mm": "Flatness RMS (mm)",
@@ -37,18 +41,7 @@ METRICS = {
 
 def per_frame(root: Path) -> dict[int, dict[str, float]]:
     """frame_idx -> {tilt_deg, flatness_rms_mm, board_size_mm, scale_error_pct, rigid_rms_mm}."""
-    flat = json.loads((root / "scale_independent_metrics" / "flatness_consistency.json").read_text())
-    scale = json.loads((root / "scale_alignment.json").read_text())
-    out: dict[int, dict[str, float]] = {}
-    for f in flat["per_frame"]:
-        out[f["frame_idx"]] = {"tilt_deg": f["tilt_deg"], "flatness_rms_mm": f["flatness_rms_mm"]}
-    for f in scale["per_frame"]:
-        out.setdefault(f["frame_idx"], {}).update(
-            board_size_mm=f["board_size_mm"],
-            scale_error_pct=f["scale_error_pct"],
-            rigid_rms_mm=f["rigid_rms_mm"],
-        )
-    return dict(sorted(out.items()))
+    return load_per_frame(root)
 
 
 def summarise(values: list[float]) -> dict[str, float]:
