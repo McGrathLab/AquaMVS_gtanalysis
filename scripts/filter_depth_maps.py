@@ -22,7 +22,7 @@ per-frame entry symlinked to the source, calibration.json and config.yaml
 copied, and FILTER_README.md recording thresholds and pixels kept. Point it at
 run_all.py via --data-root.
 
-Requires the aquamvs-june environment (torch; CUDA recommended).
+Requires the pinned environment in requirements.txt (torch; CUDA recommended).
 
 Usage:
     python scripts/filter_depth_maps.py <source run dir> <destination run dir> [--device cuda]

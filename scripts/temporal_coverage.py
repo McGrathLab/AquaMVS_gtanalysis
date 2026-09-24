@@ -2,17 +2,26 @@
 R2.3 temporal coverage and large-error-tail readout for the fish-present sequence.
 
 Grids each frame's fused point cloud (or, with --source mesh, its surface
-mesh vertices) into a height map exactly as AquaMVS does
-for its summary gallery (aquamvs.pipeline.helpers._collect_height_maps: linear
-scipy griddata of Z over XY at config.reconstruction.grid_resolution, NaN
-outside the hull) -- except on ONE grid shared by all frames (the union of the
-frames' XY extents), so cells correspond across frames.
+mesh vertices) into a height map on ONE grid shared by all frames, so cells
+correspond across frames. Two methods:
+
+  --method bin (default, the paper's): per-cell mean of the points falling in
+      each 2 mm cell, on a grid spanning frame 0's extent, with the sand mask
+      taken from frame 0 -- ported from the paper's own analysis
+      (DissertationFigures, figures/aquamvs/real.py). Reproduces the published
+      figures from the published point clouds.
+  --method interp: linear scipy griddata of Z over XY at
+      config.reconstruction.grid_resolution, NaN outside the hull, as AquaMVS's
+      summary gallery does (aquamvs.pipeline.helpers._collect_height_maps), on
+      the union of the frames' extents. Fills sparse cells with interpolated
+      values, so it is NOT comparable with the paper.
 
 For each consecutive frame pair it reports:
   - valid coverage of each frame, as a fraction of the grid
   - valid-in-both (intersection of non-NaN cells)
   - the sand-surface ROI: central 50% x 50% crop of the grid, further gated to
-    cells whose Z is within 3 sigma of that frame's crop mean in BOTH frames
+    cells whose Z is within 3 sigma in Z -- of frame 0's median, from frame 0
+    alone (bin); of each frame's crop mean, in BOTH frames of the pair (interp)
   - how many common cells are actually used (ROI / valid-both)
   - missing values: NaN cells are excluded, never interpolated
   - repeatability: fraction of ROI cells with |dz| <= 0.5 mm and <= 1.0 mm
