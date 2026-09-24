@@ -337,8 +337,16 @@ def main() -> None:
             "Relative paths resolve against the repo root."
         ),
     )
+    parser.add_argument(
+        "--strict-fonts",
+        action="store_true",
+        help="Fail if LaTeX is unavailable instead of falling back to DejaVu Serif "
+             "(use for manuscript figures).",
+    )
     args = parser.parse_args()
 
+    if args.strict_fonts:
+        os.environ["AQUAMVS_GT_STRICT_FONTS"] = "1"
     # Set before any stage subprocess or deliverable import resolves its paths.
     if args.output_root:
         os.environ[OUT_ENV] = args.output_root

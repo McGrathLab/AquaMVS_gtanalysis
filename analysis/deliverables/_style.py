@@ -8,8 +8,12 @@ the rcParams context manager, and the multi-format save helper. Styling only —
 nothing here affects any computed value.
 
 Font note: if a LaTeX installation is found, text renders with usetex + Computer
-Modern; otherwise with DejaVu Serif. Figures therefore differ in typeface (not
-content) between machines with and without LaTeX.
+Modern (Type 1 in PDFs, matching the manuscript); otherwise with DejaVu Serif.
+Figures therefore differ in typeface (not content) between machines with and
+without LaTeX. The fallback embeds TrueType (Type 42), never Type 3, which
+Elsevier artwork guidelines reject. For manuscript figures set
+AQUAMVS_GT_STRICT_FONTS=1 (or pass --strict-fonts to run_all.py / make_figures.py)
+to fail instead of falling back.
 """
 
 from __future__ import annotations
@@ -22,9 +26,13 @@ from pathlib import Path
 from typing import Generator
 
 import matplotlib as mpl
+import matplotlib.colors as mcolors
 import matplotlib.figure
 
-__all__ = ["dissertation_style", "COLORS", "PALETTE", "save_figure"]
+__all__ = ["dissertation_style", "COLORS", "PALETTE", "TINTS", "CMAP_SEQ", "CMAP_DIV",
+           "SINGLE_COL", "DOUBLE_COL", "save_figure", "require_latex"]
+
+STRICT_FONTS_ENV = "AQUAMVS_GT_STRICT_FONTS"
 
 # ---------------------------------------------------------------------------
 # Qualitative palette — 12 colors, colorblind-safe
@@ -48,7 +56,30 @@ COLORS = {
 
 PALETTE = list(COLORS.values())
 
+# Light tints (15 % opacity on white) of the palette, for Graphviz fills.
+TINTS = {
+    "blue":      "#D8DFE9",
+    "gold":      "#FBF8E4",
+    "teal":      "#E2F2EF",
+    "cyan":      "#E8F7FC",
+    "green":     "#DDEDE0",
+    "olive":     "#EFEFE0",
+    "coral":     "#FCE8EA",
+    "rose":      "#FCEFF2",
+    "purple":    "#F2E0EA",
+    "indigo":    "#E0DDED",
+    "gray":      "#F4F4F4",
+    "dark gray": "#EAEAEA",
+}
+
+# Sequential: cividis. Diverging "ocean": brand blue <-> coral through white.
+CMAP_SEQ = mpl.colormaps["cividis"]
+CMAP_DIV = mcolors.LinearSegmentedColormap.from_list(
+    "ocean_div", ["#4477AA", "#92C5DE", "#F7F7F7", "#F4A582", "#EE6677"], N=256,
+)
+
 SINGLE_COL = 3.5   # single-column figure width (in)
+DOUBLE_COL = 7.0   # double-column / full-width figure width (in)
 
 
 # ---------------------------------------------------------------------------
@@ -68,6 +99,16 @@ def _find_latex() -> bool:
 
 
 _HAS_LATEX = _find_latex()
+
+
+def require_latex() -> None:
+    """Raise unless LaTeX is available (manuscript figures must be Computer Modern)."""
+    if not _HAS_LATEX:
+        raise RuntimeError(
+            "No LaTeX found: figures would fall back to DejaVu Serif, which does not match "
+            "the manuscript. Install LaTeX (texlive-latex-extra, cm-super, dvipng) or unset "
+            f"{STRICT_FONTS_ENV}."
+        )
 
 # ---------------------------------------------------------------------------
 # Matplotlib rcParams for LaTeX-quality output
@@ -90,6 +131,10 @@ _FONT_RC: dict = (
 
 RCPARAMS: dict = {
     **_FONT_RC,
+
+    # --- never emit Type 3 fonts (only reached on the non-usetex fallback) ---
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
 
     # --- figure defaults ---
     "figure.figsize": (SINGLE_COL, SINGLE_COL * 0.75),
@@ -130,6 +175,8 @@ RCPARAMS: dict = {
 @contextlib.contextmanager
 def dissertation_style() -> Generator[None, None, None]:
     """Context manager that temporarily activates the dissertation rcParams."""
+    if os.environ.get(STRICT_FONTS_ENV):
+        require_latex()
     with mpl.rc_context(rc=RCPARAMS):
         yield
 
