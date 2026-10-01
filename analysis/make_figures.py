@@ -58,6 +58,8 @@ def main() -> None:
         os.environ["AQUAMVS_GT_STRICT_FONTS"] = "1"
     # Fig. 4's generators read their root from the environment at import time.
     os.environ["AQUAMVS_GT_OUT"] = str(args.board_analysis)
+    # ...and Fig. 4b's camera models from the board run's calibration.
+    os.environ["AQUAMVS_GT_DATA"] = str(args.board_run)
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
     mesh = lambda run: run / "output" / "frame_000000" / "mesh" / "surface.ply"  # noqa: E731

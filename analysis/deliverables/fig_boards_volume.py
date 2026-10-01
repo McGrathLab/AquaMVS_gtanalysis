@@ -20,9 +20,9 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from analysis.deliverables._style import dissertation_style, COLORS, save_figure
 from analysis.deliverables._artifacts import load_flatness, FIGURES_DIR
+from analysis._paths import data_root
 from analysis.loader import GroundTruthDataset, DatasetConfig
 
-DATA_ROOT = "data/aquamvs_ground_truth_analysis"
 BOARD_W, BOARD_H = 0.72, 0.54  # full ChArUco board extent (12x9 x 60 mm), metres
 
 
@@ -56,7 +56,7 @@ def main() -> None:
     cmap = cm.get_cmap("cividis")
     norm = plt.Normalize(vmin=flat.min(), vmax=flat.max())
 
-    ds = GroundTruthDataset(DatasetConfig(data_root=DATA_ROOT))
+    ds = GroundTruthDataset(DatasetConfig(data_root=data_root()))
     cams = _camera_centres(ds)
 
     with dissertation_style():

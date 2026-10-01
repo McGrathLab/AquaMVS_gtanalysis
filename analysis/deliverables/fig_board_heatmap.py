@@ -20,6 +20,7 @@ from matplotlib import cm
 
 from analysis.deliverables._style import dissertation_style, COLORS, save_figure
 from analysis.deliverables._artifacts import ANALYSIS_OUTPUT, FIGURES_DIR
+from analysis._paths import data_root
 from analysis.loader import GroundTruthDataset, DatasetConfig
 from analysis.charuco_detect import build_board_geometry
 from analysis.cross_camera import load_corners
@@ -27,7 +28,6 @@ from analysis.alignment import (
     build_consensus_corners, ideal_board_corners, matched_arrays, rigid_inlier_fit,
 )
 
-DATA_ROOT = "data/aquamvs_ground_truth_analysis"
 CORNERS = str(ANALYSIS_OUTPUT / "corner_transfer" / "corners.npz")
 
 
@@ -36,7 +36,7 @@ def main() -> None:
     fi, cam, cid = corners["frame_idx"], corners["camera_id"], corners["corner_id"]
     pts = corners["points"].astype(np.float64)
 
-    ds = GroundTruthDataset(DatasetConfig(data_root=DATA_ROOT))
+    ds = GroundTruthDataset(DatasetConfig(data_root=data_root()))
     spec = ds.board_spec()
     n_cols = spec.squares_x - 1                  # internal-corner grid width (11)
     ideal_all = ideal_board_corners(build_board_geometry(spec))

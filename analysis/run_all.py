@@ -41,7 +41,7 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
-from analysis._paths import OUT_ENV, RESULTS_ENV, analysis_output_root, results_root  # noqa: E402
+from analysis._paths import DATA_ENV, OUT_ENV, RESULTS_ENV, analysis_output_root, results_root  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Path constants (single-source clarity). Output paths are derived from the
@@ -353,6 +353,8 @@ def main() -> None:
         os.environ[OUT_ENV] = args.output_root
     if args.results_dir:
         os.environ[RESULTS_ENV] = args.results_dir
+    # The figures read the same run the metrics were computed from.
+    os.environ[DATA_ENV] = args.data_root
     print(f"Analysis output root : {analysis_output_root()}")
     print(f"Results root         : {results_root()}")
 

@@ -30,6 +30,7 @@ from analysis.deliverables._artifacts import (
 )
 
 # Compute helpers (same code path as the MET-06 metric — no drift)
+from analysis._paths import data_root
 from analysis.loader import GroundTruthDataset, DatasetConfig
 from analysis.charuco_detect import build_board_geometry
 from analysis.cross_camera import load_corners
@@ -37,7 +38,6 @@ from analysis.projection import build_projection_models
 from analysis.error_decomposition import local_frame_components
 from analysis.compute_error_decomposition import frame_cross_camera_samples
 
-DATA_ROOT = "data/aquamvs_ground_truth_analysis"
 CORNERS = str(ANALYSIS_OUTPUT / "corner_transfer" / "corners.npz")
 
 
@@ -47,7 +47,7 @@ def _collect_components():
     fi, cam, cid = corners["frame_idx"], corners["camera_id"], corners["corner_id"]
     pts, pix = corners["points"].astype(np.float64), corners["pixels"].astype(np.float64)
 
-    ds = GroundTruthDataset(DatasetConfig(data_root=DATA_ROOT))
+    ds = GroundTruthDataset(DatasetConfig(data_root=data_root()))
     models = build_projection_models(ds.calibration(), sorted(set(str(c) for c in cam)))
 
     lat, rng = [], []
