@@ -17,10 +17,10 @@ Every number in `results/` and in the paper comes from this stack:
 
 | Component | Version | Source |
 |---|---|---|
-| AquaMVS | 1.7.2 | `git+https://github.com/McGrathLab/AquaMVS.git@v1.7.2` |
+| AquaMVS | 1.7.2 (1.7.3 reproduces it bit for bit) | PyPI |
 | AquaCal | 2.1.0 | PyPI |
-| RoMa v2 | 2.0.1 + GPU-memory fix | `tlancaster6/RoMaV2@29ee427` (AquaMVS 1.7.2's pinned prerequisite) |
-| LightGlue | `edb2b83` | `cvg/LightGlue` (AquaMVS 1.7.2's pinned prerequisite) |
+| RoMa v2 | 2.0.1 + GPU-memory fix | `tlancaster6/RoMaV2@29ee427` (AquaMVS's pinned prerequisite) |
+| LightGlue | `edb2b83` | `cvg/LightGlue` (AquaMVS's pinned prerequisite) |
 | PyTorch | 2.5.1 (CUDA 12.1) | pytorch.org |
 | Python | 3.12 | |
 
@@ -37,12 +37,12 @@ pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorc
 pip install --no-deps -r requirements-romav2.txt
 pip install -r requirements.txt
 python -m pytest -q tests          # 26 tests
-python analysis/entrypoint.py      # smoke test: prints a dataset summary
 ```
 
 `requirements.txt` pins everything above plus the libraries this repository imports.
-LightGlue and RoMa v2 install from git because they are not on PyPI. AquaMVS 1.7.2 also
-installs from its git tag, because PyPI stops at 1.7.1 (the same source code).
+LightGlue and RoMa v2 install from git because they are not on PyPI. It installs AquaMVS
+1.7.3, which reproduces the 1.7.2 reconstruction behind the results bit for bit; its changes
+are to installation, headless rendering and CPU device handling.
 
 **Install RoMa v2 with `--no-deps`, in the order shown.** It declares `torchvision>=0.23.0`,
 and letting pip resolve that replaces the torch 2.5.1 stack with a much newer one. The
@@ -63,24 +63,39 @@ sudo apt install texlive-latex-extra texlive-fonts-recommended cm-super dvipng g
 The 3D mesh renders (Figs. 2 and 3) use Open3D's offscreen renderer, which needs a GPU with
 EGL on Linux (it works without a display) or a desktop session.
 
-## 1. Recompute the metrics from the archived reconstruction
+## 1. Recompute the metrics from the archived reconstructions
 
 This is the quick path: no GPU, no reconstruction.
 
-**Dataset DOI:** https://doi.org/10.5281/zenodo.21134748 (concept DOI, which always resolves to the latest version)
+**Dataset:** version 2.0.0 of the ground-truth dataset,
+[10.5281/zenodo.23087547](https://doi.org/10.5281/zenodo.23087547). It holds the AquaCal
+2.1.0 / AquaMVS 1.7.2 reconstructions behind every result here. (The concept DOI
+[10.5281/zenodo.21134748](https://doi.org/10.5281/zenodo.21134748) resolves to the latest
+version. Version 1.0.0 holds the February 2026 calibration and its AquaMVS 1.5.2
+reconstruction; record 10.5281/zenodo.23086263 is an accidental duplicate of 1.0.0.)
 
-<!-- TODO(release): name the Zenodo version that ships the AquaCal 2.1.0 / AquaMVS 1.7.2
-     reconstruction once it is published, and say which earlier version holds the
-     February 2026 calibration / AquaMVS 1.5.2 reconstruction. -->
+The dataset comes as separate zips. Each extracts at the repository root into this
+repository's own `data/` paths, so extract the ones you need side by side:
 
-Download the archive and extract it at the repository root. It contains a top-level `data/`,
-which yields `data/aquamvs_ground_truth_analysis/` (frames, config, calibration,
-reconstruction output) and `data/analysis_output/` (derived metrics and figures):
+| Zip | Size | Contents |
+|---|---|---|
+| `aquamvs-gt-core.zip` | 0.26 GB | input frames and config (`data/aquamvs_ground_truth_analysis/`), every run's `data/analysis_output.*` and `data/results.*`, the comparison table, fish-present readouts (`data/runs_fish/`) |
+| `aquamvs-gt-run-refractive.zip` | 5.80 GB | `data/runs/modern_refractive`, the reconstruction behind the paper's results |
+| `aquamvs-gt-run-pinhole_B.zip` | 6.04 GB | `data/runs/modern_pinhole_B` (R2.1) |
+| `aquamvs-gt-run-lightglue.zip` | 3.95 GB | `data/runs/modern_lightglue` (R2.2) |
+| `aquamvs-gt-run-matchfilt.zip` | 0.81 GB | both `*_matchfilt` runs (R2.2); needs the refractive and LightGlue zips |
+
+Each run directory holds its calibration and config and, per frame, the parts of AquaMVS's
+output that the analysis and figures read (depth maps, fused point cloud, undistorted
+images, mesh). Pinhole A ships as its calibration, config and analysis outputs only; its
+reconstruction is regenerated as in section 2b.
 
 ```bash
 git clone https://github.com/McGrathLab/AquaMVS_gtanalysis.git
 cd AquaMVS_gtanalysis
-python scripts/extract_verify.py --data-root ./data --zip-path /path/to/downloaded.zip
+unzip /path/to/aquamvs-gt-core.zip
+unzip /path/to/aquamvs-gt-run-refractive.zip
+python analysis/entrypoint.py --data-root data/runs/modern_refractive   # smoke test: dataset summary
 ```
 
 `analysis/run_all.py` is the single entry point for the metrics. It runs every stage in
@@ -89,9 +104,15 @@ scale alignment and error decomposition. It then regenerates the tables and figu
 deterministic, and each stage overwrites its own artifacts.
 
 ```bash
-python analysis/run_all.py                    # writes data/analysis_output/ and results/
-python analysis/run_all.py --skip-metrics     # regenerate the deliverables only
+# writes data/analysis_output/ and results/; compare with the shipped data/analysis_output.modern_refractive
+python analysis/run_all.py --data-root data/runs/modern_refractive
+python analysis/run_all.py --data-root data/runs/modern_refractive --skip-metrics   # deliverables only
 ```
+
+The other runs work the same way; section 2d has the loop that writes each run's
+`data/analysis_output.<run>` and `data/results.<run>`. Run on the extracted dataset, it
+reproduces the shipped tables byte for byte (checked for `modern_refractive` and
+`modern_lightglue_matchfilt`).
 
 ## 2. Reproduce everything from the raw inputs
 
@@ -105,7 +126,7 @@ A clean environment built as above reproduces this repository's refractive recon
 bit for bit: identical depth maps and fused point counts.
 
 **Inputs:**
-- the GT dataset above: its `frames/` and `config.yaml` (from `data/aquamvs_ground_truth_analysis/`);
+- the GT dataset's core zip (section 1): its `frames/` and `config.yaml` (in `data/aquamvs_ground_truth_analysis/`);
 - AquaCal Record B ([10.5281/zenodo.22117061](https://doi.org/10.5281/zenodo.22117061)): the refractive calibration, and `config_paper.yaml`;
 - AquaCal Record A ([10.5281/zenodo.22116461](https://doi.org/10.5281/zenodo.22116461), 4.3 GB): calibration frames, needed only for the pinhole refit.
 
@@ -189,26 +210,28 @@ python scripts/revision_stats.py \
     --json data/results.modern_comparison/revision_stats.json
 ```
 
-To run the interface-sensitivity check, also analyze the February 2026 reconstruction
-shipped in the archive (`--data-root data/aquamvs_ground_truth_analysis`). Pass its output
-root as a further `--root`, then add `--pair <that name> refractive`.
+To run the interface-sensitivity check, also analyze the February 2026 reconstruction. It
+ships in version 1.0.0 of the GT dataset
+([10.5281/zenodo.21134749](https://doi.org/10.5281/zenodo.21134749)), whose single
+`data.zip` extracts to `data/aquamvs_ground_truth_analysis/` (check it with
+`scripts/extract_verify.py`). Analyze it with `--data-root data/aquamvs_ground_truth_analysis`,
+pass its output root as a further `--root`, then add `--pair <that name> refractive`.
 
 ### 2e. Fish-present sequence (R1.5, R2.2, R2.3)
 
-These runs use session 021826 from the AquaMVS example dataset
-([10.5281/zenodo.18702024](https://doi.org/10.5281/zenodo.18702024)): its temporal-median
-frames `images/filtered/` (frames 1799 to 8999, 5 frames), `masks/`, and the raw frame 1799.
-The reconstruction config is the paper's 021826 config, which differs from the example
-dataset's tutorial `config.yaml`: it uses `voxel_size` 0.0005 and `poisson_depth` 10.
-Each run below is identical to the published benchmark run for its arm apart from paths.
-
-<!-- TODO(release): point at the paper's 021826 config and the raw frame-1799 images once
-     the example dataset's new version (which will carry both) is published. -->
+These runs use session 021826 from the AquaMVS example dataset, version 1.3.0
+([10.5281/zenodo.23086258](https://doi.org/10.5281/zenodo.23086258); concept
+[10.5281/zenodo.18702024](https://doi.org/10.5281/zenodo.18702024)). They use its
+temporal-median frames `images/filtered/` (frames 1799 to 8999, 5 frames), `masks/`, the raw
+frame 1799 in `images/raw/`, and `config_paper.yaml`. That is the paper's 021826 config,
+which differs from the example dataset's tutorial `config.yaml`: it uses `voxel_size` 0.0005
+and `poisson_depth` 10. Each run below is identical to the published benchmark run for its
+arm apart from paths.
 
 ```bash
 EX=/path/to/aquamvs-example-dataset
 CFG=$EX/config_paper.yaml          # the paper's 021826 config
-RAW=/path/to/raw_frame_1799        # one subdirectory per camera, frame_001799.png
+RAW=$EX/images/raw                 # one subdirectory per camera, frame_001799.png
 
 # RoMa, the five median frames (R2.3; RoMa arm of Fig. 2 and of the point-count comparison)
 python scripts/make_run_dir.py data/runs_fish/modern_run5_filtered --config $CFG \
@@ -244,6 +267,10 @@ The fused point counts of the RoMa, LightGlue-full and LightGlue-sparse arms are
 `output/frame_000000/point_cloud/` (`fused.ply`, or `sparse.ply` in sparse mode).
 The temporal-median frames are trailing 1800-frame (60 s) medians of the raw video.
 
+The GT dataset's core zip ships these readouts without the reconstructions: each fish-present
+run's `config.yaml`, `run.log`, `temporal_coverage.json` / `median_comparison.json`, and every
+run's fused point counts in `data/runs_fish/point_counts.json`.
+
 ## 3. Figures
 
 Every manuscript figure, under its manuscript filename, with a `MANIFEST.md` mapping each
@@ -255,7 +282,9 @@ python analysis/make_figures.py --only fig3 figS1 # a subset
 ```
 
 This reads the runs and analysis outputs from sections 2b to 2e, and takes about a minute
-on a GPU machine. Figure text is LaTeX Computer Modern; without LaTeX the command stops,
+on a GPU machine. From the GT dataset alone (core plus refractive zips), the board figures
+render; the fish-present figures (Figs. 2 and S1, the median figure) need the section 2e
+runs. Figure text is LaTeX Computer Modern; without LaTeX the command stops,
 rather than silently switch to another font (`--allow-font-fallback` for a draft). The
 individual generators are in `analysis/deliverables/fig_*.py`, each runnable on its own.
 

@@ -6,7 +6,7 @@
 #   pip install -r requirements.txt
 #
 # RoMa v2 lives in its own file because it must be installed --no-deps (see there).
-# Both git prerequisites are exactly AquaMVS v1.7.2's requirements-prereqs.txt pins.
+# Both git prerequisites are exactly AquaMVS 1.7.3's pins (unchanged since 1.7.2).
 
 # AquaMVS prerequisites
 lightglue @ git+https://github.com/cvg/LightGlue.git@edb2b838efb2ecfe3f88097c5fad9887d95aedad
@@ -15,8 +15,10 @@ einops==0.8.2
 rich==15.0.0
 pillow==12.2.0
 
-# AquaMVS and AquaCal. PyPI stops at aquamvs 1.7.1 (same source as 1.7.2), so the tag is pinned.
-aquamvs @ git+https://github.com/McGrathLab/AquaMVS.git@v1.7.2
+# AquaMVS and AquaCal. The results were produced with AquaMVS 1.7.2; 1.7.3 reproduces its
+# reconstruction bit for bit (its changes are to installation, headless rendering and CPU
+# device handling).
+aquamvs==1.7.3
 aquacal==2.1.0
 
 # Libraries this repository imports directly, at the versions used
