@@ -18,7 +18,11 @@ import math
 import sys
 from pathlib import Path
 
-ARTIFACT_PATH = Path("data/analysis_output/scale_independent_metrics/flatness_consistency.json")
+# Follow AQUAMVS_GT_OUT so each output root can be checked independently.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from analysis._paths import analysis_output_root  # noqa: E402
+
+ARTIFACT_PATH = analysis_output_root() / "scale_independent_metrics" / "flatness_consistency.json"
 EXPECTED_FRAME_IDXS = {1, 2, 3, 4, 6, 7, 8, 9}
 PLAUSIBLE_MIN_MM = 0.05
 PLAUSIBLE_MAX_MM = 20.0

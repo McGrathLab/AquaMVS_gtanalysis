@@ -14,17 +14,24 @@ Deliverable generators (always run after metric stages):
   make_table, make_per_camera, make_methods, fig_spatial_consistency, fig_range_lateral
 
 Run:
-    conda run -n AquaMVS python analysis/run_all.py
-    conda run -n AquaMVS python analysis/run_all.py --data-root data/aquamvs_ground_truth_analysis
-    conda run -n AquaMVS python analysis/run_all.py --skip-metrics  # regenerate deliverables only
+    python analysis/run_all.py
+    python analysis/run_all.py --data-root data/aquamvs_ground_truth_analysis
+    python analysis/run_all.py --skip-metrics  # regenerate deliverables only
+
+    # Analyze an alternative reconstruction without touching the baseline artifacts:
+    python analysis/run_all.py --data-root <alt dataset root> \
+        --output-root data/analysis_output.pinhole --results-dir results.pinhole
 
 The script is deterministic and safe to re-run: each stage overwrites its artifacts
 in place; no timestamps or randomness are introduced into output filenames.
+Output roots default to data/analysis_output and results/; --output-root /
+--results-dir (or the AQUAMVS_GT_OUT / AQUAMVS_GT_RESULTS env vars) redirect them.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -34,15 +41,24 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
+from analysis._paths import DATA_ENV, OUT_ENV, RESULTS_ENV, analysis_output_root, results_root  # noqa: E402
+
 # ---------------------------------------------------------------------------
-# Path constants (relative to repo root; kept here for single-source clarity)
+# Path constants (single-source clarity). Output paths are derived from the
+# analysis-output root at run time so --output-root / AQUAMVS_GT_OUT apply.
 # ---------------------------------------------------------------------------
 _DATA_ROOT_DEFAULT = "data/aquamvs_ground_truth_analysis"
-_CORNERS = "data/analysis_output/corner_transfer/corners.npz"
-_CORNER_TRANSFER_OUT = "data/analysis_output/corner_transfer"
-_SI_METRICS_OUT = "data/analysis_output/scale_independent_metrics"
-_SCALE_ALIGNMENT_OUT = "data/analysis_output/scale_alignment.json"
-_ERROR_DECOMP_OUT = "data/analysis_output"
+
+
+def _output_paths() -> dict[str, str]:
+    out = analysis_output_root()
+    return {
+        "corners": str(out / "corner_transfer" / "corners.npz"),
+        "corner_transfer_out": str(out / "corner_transfer"),
+        "si_metrics_out": str(out / "scale_independent_metrics"),
+        "scale_alignment_out": str(out / "scale_alignment.json"),
+        "error_decomp_out": str(out),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -73,9 +89,10 @@ def run_metrics(data_root: str) -> None:
     compute_scale_alignment (stage 4) guards itself and will refuse to run
     unless Phase-3 artifacts exist, so stages 2 and 3 MUST complete first.
     """
-    corners = _CORNERS
-    corner_out = _CORNER_TRANSFER_OUT
-    si_out = _SI_METRICS_OUT
+    paths = _output_paths()
+    corners = paths["corners"]
+    corner_out = paths["corner_transfer_out"]
+    si_out = paths["si_metrics_out"]
 
     # Stage 1 — corner transfer (XFER-02/03/04)
     _run(
@@ -114,7 +131,7 @@ def run_metrics(data_root: str) -> None:
             sys.executable, "-m", "analysis.compute_scale_alignment",
             "--corners", corners,
             "--data-root", data_root,
-            "--out", _SCALE_ALIGNMENT_OUT,
+            "--out", paths["scale_alignment_out"],
         ],
         "4/5  compute_scale_alignment  (MET-04/05)",
     )
@@ -125,7 +142,7 @@ def run_metrics(data_root: str) -> None:
             sys.executable, "-m", "analysis.compute_error_decomposition",
             "--corners", corners,
             "--data-root", data_root,
-            "--out", _ERROR_DECOMP_OUT,
+            "--out", paths["error_decomp_out"],
         ],
         "5/5  compute_error_decomposition  (MET-06)",
     )
@@ -142,7 +159,7 @@ def run_deliverables() -> None:
     from analysis.deliverables.make_table import main as make_table
     from analysis.deliverables.make_per_camera import main as make_per_camera
     from analysis.deliverables.make_methods import main as make_methods
-    from analysis.deliverables.fig_spatial_consistency import main as fig_spatial
+    from analysis.deliverables.fig_spatial_consistency import render as fig_spatial
     from analysis.deliverables.fig_range_lateral import main as fig_range
     from analysis.deliverables.fig_anisotropy import main as fig_anisotropy
     from analysis.deliverables.fig_boards_volume import main as fig_boards_volume
@@ -162,7 +179,8 @@ def run_deliverables() -> None:
     make_methods()
 
     print("\n--- fig_spatial_consistency ---")
-    fig_spatial()
+    for p in fig_spatial():
+        print(f"Saved: {p}")
 
     print("\n--- fig_range_lateral ---")
     fig_range()
@@ -182,7 +200,7 @@ def run_deliverables() -> None:
 # ---------------------------------------------------------------------------
 
 def _fmt_file(path: Path, repo_root: Path) -> str:
-    rel = path.relative_to(repo_root)
+    rel = path.relative_to(repo_root) if path.is_relative_to(repo_root) else path
     if path.exists():
         size = path.stat().st_size
         return f"  EXISTS  {size:>12,} B   {rel}"
@@ -199,25 +217,27 @@ def print_summary() -> None:
     )
 
     repo = _REPO_ROOT
-    fig_dir = repo / "data" / "analysis_output" / "figures"
+    out = analysis_output_root()
+    res = results_root()
+    fig_dir = out / "figures"
 
     output_files: list[Path] = [
         # Metric artifacts
-        repo / "data/analysis_output/corner_transfer/corners.npz",
-        repo / "data/analysis_output/corner_transfer/dropout_report.json",
-        repo / "data/analysis_output/scale_independent_metrics/flatness_consistency.json",
-        repo / "data/analysis_output/scale_independent_metrics/cross_camera_agreement.json",
-        repo / "data/analysis_output/scale_alignment.json",
-        repo / "data/analysis_output/error_decomposition.json",
+        out / "corner_transfer/corners.npz",
+        out / "corner_transfer/dropout_report.json",
+        out / "scale_independent_metrics/flatness_consistency.json",
+        out / "scale_independent_metrics/cross_camera_agreement.json",
+        out / "scale_alignment.json",
+        out / "error_decomposition.json",
         # Table deliverables
-        repo / "results/table.md",
-        repo / "results/table.tex",
-        repo / "results/table.csv",
+        res / "table.md",
+        res / "table.tex",
+        res / "table.csv",
         # Per-camera deliverable
-        repo / "results/per_camera_agreement.md",
-        repo / "results/per_camera_agreement.csv",
+        res / "per_camera_agreement.md",
+        res / "per_camera_agreement.csv",
         # Methods deliverable
-        repo / "results/methods.md",
+        res / "methods.md",
         # Figures (6 files: 2 names x 3 formats)
         fig_dir / "spatial_consistency.svg",
         fig_dir / "spatial_consistency.pdf",
@@ -302,7 +322,41 @@ def main() -> None:
             "artifacts are already present on disk."
         ),
     )
+    parser.add_argument(
+        "--output-root",
+        default=None,
+        help=(
+            f"Analysis-output root (default: ${OUT_ENV} or data/analysis_output). "
+            "Relative paths resolve against the repo root."
+        ),
+    )
+    parser.add_argument(
+        "--results-dir",
+        default=None,
+        help=(
+            f"Deliverables root (default: ${RESULTS_ENV} or results). "
+            "Relative paths resolve against the repo root."
+        ),
+    )
+    parser.add_argument(
+        "--strict-fonts",
+        action="store_true",
+        help="Fail if LaTeX is unavailable instead of falling back to DejaVu Serif "
+             "(use for manuscript figures).",
+    )
     args = parser.parse_args()
+
+    if args.strict_fonts:
+        os.environ["AQUAMVS_GT_STRICT_FONTS"] = "1"
+    # Set before any stage subprocess or deliverable import resolves its paths.
+    if args.output_root:
+        os.environ[OUT_ENV] = args.output_root
+    if args.results_dir:
+        os.environ[RESULTS_ENV] = args.results_dir
+    # The figures read the same run the metrics were computed from.
+    os.environ[DATA_ENV] = args.data_root
+    print(f"Analysis output root : {analysis_output_root()}")
+    print(f"Results root         : {results_root()}")
 
     if not args.skip_metrics:
         run_metrics(args.data_root)

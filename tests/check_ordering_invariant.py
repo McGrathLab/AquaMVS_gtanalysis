@@ -29,15 +29,19 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Follow AQUAMVS_GT_OUT so each output root can be checked independently.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from analysis._paths import analysis_output_root  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
-PHASE3_DIR = REPO_ROOT / "data" / "analysis_output" / "scale_independent_metrics"
+PHASE3_DIR = analysis_output_root() / "scale_independent_metrics"
 PHASE3_ARTIFACTS = (
     PHASE3_DIR / "flatness_consistency.json",
     PHASE3_DIR / "cross_camera_agreement.json",
 )
 COMPUTE_SCRIPT = REPO_ROOT / "analysis" / "compute_scale_alignment.py"
-PHASE4_ARTIFACT = REPO_ROOT / "data" / "analysis_output" / "scale_alignment.json"
-PHASE4_PARENT_NAME = "analysis_output"
+PHASE4_ARTIFACT = analysis_output_root() / "scale_alignment.json"
+PHASE4_PARENT_NAME = analysis_output_root().name
 FORBIDDEN_PARENT_NAME = "scale_independent_metrics"
 
 
@@ -100,7 +104,7 @@ def main() -> None:
 
     print("check_ordering_invariant OK")
     print(f"  Phase 3 hashes byte-identical before/after Phase 4 run ({len(before)} files).")
-    print(f"  Phase 4 artifact on separate path: {PHASE4_ARTIFACT.relative_to(REPO_ROOT)}")
+    print(f"  Phase 4 artifact on separate path: {PHASE4_ARTIFACT}")
     sys.exit(0)
 
 

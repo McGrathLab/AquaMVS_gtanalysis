@@ -6,8 +6,8 @@ validation set, depth map availability, and fused cloud paths. Used to confirm
 the data environment is correctly set up before running downstream analyses.
 
 Run:
-    conda run -n AquaMVS python analysis/entrypoint.py
-    conda run -n AquaMVS python analysis/entrypoint.py --data-root /path/to/data
+    python analysis/entrypoint.py
+    python analysis/entrypoint.py --data-root /path/to/data
 """
 
 from __future__ import annotations

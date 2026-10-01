@@ -10,8 +10,8 @@ XFER-01 on real data: subpixel corners detected on the SAME pixel grid as the
 depth maps, ready for back-projection in Plan 02-02.
 
 Run:
-    conda run -n AquaMVS python analysis/detect_corners.py
-    conda run -n AquaMVS python analysis/detect_corners.py --data-root /path/to/data
+    python analysis/detect_corners.py
+    python analysis/detect_corners.py --data-root /path/to/data
 """
 
 from __future__ import annotations

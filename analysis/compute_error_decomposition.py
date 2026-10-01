@@ -14,7 +14,7 @@ in the RAW MVS frame. Writes data/analysis_output/error_decomposition.json.
 
 Usage
 -----
-    conda run -n AquaMVS python analysis/compute_error_decomposition.py \
+    python analysis/compute_error_decomposition.py \
         --corners data/analysis_output/corner_transfer/corners.npz \
         --data-root data/aquamvs_ground_truth_analysis \
         --out data/analysis_output
@@ -31,6 +31,8 @@ from pathlib import Path
 
 # Allow running from the repo root without installing the package
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from analysis._paths import analysis_output_root  # noqa: E402
 
 import numpy as np
 import torch
@@ -299,8 +301,8 @@ def _fmt(v) -> str:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Compute MET-06 error-direction decomposition.")
-    parser.add_argument("--corners", default="data/analysis_output/corner_transfer/corners.npz")
+    parser.add_argument("--corners", default=str(analysis_output_root() / "corner_transfer/corners.npz"))
     parser.add_argument("--data-root", default="data/aquamvs_ground_truth_analysis")
-    parser.add_argument("--out", default="data/analysis_output")
+    parser.add_argument("--out", default=str(analysis_output_root()))
     args = parser.parse_args()
     main(args.corners, args.data_root, args.out)

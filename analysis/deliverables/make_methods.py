@@ -7,8 +7,8 @@ paragraph states a headline number it is read from the artifact at runtime
 so it can never drift from the computed values.
 
 Run:
-    conda run -n AquaMVS python -m analysis.deliverables.make_methods
-    conda run -n AquaMVS python analysis/deliverables/make_methods.py
+    python -m analysis.deliverables.make_methods
+    python analysis/deliverables/make_methods.py
 """
 
 from __future__ import annotations

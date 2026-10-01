@@ -28,8 +28,8 @@ precision penalty. The "0.5 % of dimension" misread is banned and appears nowher
 
 Run
 ---
-    conda run -n AquaMVS python analysis/compute_scale_alignment.py
-    conda run -n AquaMVS python analysis/compute_scale_alignment.py \\
+    python analysis/compute_scale_alignment.py
+    python analysis/compute_scale_alignment.py \\
         --corners data/analysis_output/corner_transfer/corners.npz \\
         --data-root data/aquamvs_ground_truth_analysis \\
         --out data/analysis_output/scale_alignment.json
@@ -47,6 +47,8 @@ from pathlib import Path
 
 # Allow running from the repo root without installing the package
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from analysis._paths import analysis_output_root  # noqa: E402
 
 import numpy as np
 
@@ -71,7 +73,8 @@ logger = logging.getLogger(__name__)
 
 # Phase 3 artifacts (READ-ONLY for Phase 4). Their existence + ordering flag is
 # the runtime guard that proves Phase 4 runs AFTER Phase 3.
-PHASE3_DIR = Path("data/analysis_output/scale_independent_metrics")
+# Follows AQUAMVS_GT_OUT so an alternative run is guarded by its OWN Phase 3.
+PHASE3_DIR = analysis_output_root() / "scale_independent_metrics"
 PHASE3_ARTIFACTS = (
     "flatness_consistency.json",
     "cross_camera_agreement.json",
@@ -408,7 +411,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--corners",
-        default="data/analysis_output/corner_transfer/corners.npz",
+        default=str(analysis_output_root() / "corner_transfer/corners.npz"),
         help="Path to Phase-2 corners.npz (default: data/analysis_output/corner_transfer/corners.npz)",
     )
     parser.add_argument(
@@ -418,7 +421,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--out",
-        default="data/analysis_output/scale_alignment.json",
+        default=str(analysis_output_root() / "scale_alignment.json"),
         help=(
             "Output JSON path (default: data/analysis_output/scale_alignment.json) — "
             "NOTE: top-level analysis_output, NOT scale_independent_metrics/"
